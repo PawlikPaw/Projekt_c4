@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Projekt_c4.ViewModels"
+             x:Class="Projekt_c4.Views.MainPage"
+             Title="Moje Treningi">
+
+    <ContentPage.BindingContext>
+        <viewmodels:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Label Text="Historia treningów" FontSize="24" FontAttributes="Bold" />
+
+            <CollectionView ItemsSource="{Binding Workouts}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,5,0,5" Padding="0" CornerRadius="10" BackgroundColor="#1E1E1E">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnWorkoutTapped" />
+                            </Frame.GestureRecognizers>
+
+                            <VerticalStackLayout Padding="15">
+                                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                                <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" TextColor="LightGray" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- PRZYCISKI GŁÓWNE -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,10,0,10">
+                <Button Grid.Column="0"
+                        Text="Szybki Bieg"
+                        CornerRadius="8"
+                        HeightRequest="60"
+                        BackgroundColor="#FF5722"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        Clicked="OnRunningClicked" />
+
+                <Button Grid.Column="1"
+                        Text="Trening Siłowy"
+                        CornerRadius="8"
+                        HeightRequest="60"
+                        BackgroundColor="#2196F3"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        Clicked="OnAddWorkoutClicked" />
+            </Grid>
+
+            <Button Text="Baza wszystkich ćwiczeń"
+                    CornerRadius="8"
+                    BackgroundColor="#3F51B5"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    Clicked="OnDatabaseClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
