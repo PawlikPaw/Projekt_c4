@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Projekt_c4.Views.WorkoutDetailsPage"
+             Title="Podgląd Treningu">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <!-- Tutaj w przyszłości podepniemy (zbindowana) nazwę i datę z wybranego treningu -->
+            <Label Text="Trening klatki i tricepsa" FontSize="26" FontAttributes="Bold" />
+            <Label Text="28 października 2024" TextColor="LightGray" Margin="0,0,0,10" />
+
+            <Label Text="Wykonane ćwiczenia:" FontSize="18" FontAttributes="Bold" />
+
+            <Frame Margin="0,5" Padding="15" CornerRadius="8" BackgroundColor="#2C2C2C">
+                <VerticalStackLayout>
+                    <Label Text="Wyciskanie sztangi leżąc" FontSize="16" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="4 serie x 10 powtórzeń (80 kg)" TextColor="#A0A0A0" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Margin="0,5" Padding="15" CornerRadius="8" BackgroundColor="#2C2C2C">
+                <VerticalStackLayout>
+                    <Label Text="Pompki na poręczach (Dipy)" FontSize="16" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="3 serie x 12 powtórzeń" TextColor="#A0A0A0" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button Text="Zakończ / Edytuj"
+                    CornerRadius="8"
+                    BackgroundColor="#FF9800"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    Margin="0,20,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
