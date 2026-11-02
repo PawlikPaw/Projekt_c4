@@ -10,24 +10,20 @@ namespace Projekt_c4.Views
             InitializeComponent();
         }
 
+        private void OnLoginClicked(object sender, EventArgs e)
+        {
+            // Po kliknięciu w "Zaloguj" ukrywamy widok logowania i pokazujemy profil!
+            LoginView.IsVisible = false;
+            ProfileView.IsVisible = true;
+        }
+
         private async void OnAddWorkoutClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new AddWorkoutPage());
         }
 
-        private async void OnRunningClicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new RunningPage());
-        }
-
-        private async void OnDatabaseClicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new ExercisesDatabasePage());
-        }
-
         private async void OnWorkoutTapped(object sender, EventArgs e)
         {
-            // Przejście do widoku szczegółów po kliknięciu w "kafelek" treningu
             await Navigation.PushAsync(new WorkoutDetailsPage());
         }
     }

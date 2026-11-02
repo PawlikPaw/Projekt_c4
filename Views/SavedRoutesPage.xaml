@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Projekt_c4.Views.SavedRoutesPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#16181F">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,40,20,20" Spacing="15">
+            <Label Text="Zapisane Trasy" FontSize="26" FontAttributes="Bold" TextColor="White" Margin="0,0,0,10"/>
+
+            <Frame Margin="0,5" Padding="20" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">
+                <VerticalStackLayout>
+                    <Label Text="Bieg poranny - Park miejski" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="Dystans: 5.23 km | Czas: 28:15" TextColor="#00E676" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <Label Text="Data: 25.10.2024" TextColor="#888" FontSize="12" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Margin="0,5" Padding="20" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">
+                <VerticalStackLayout>
+                    <Label Text="Wieczorne rozbieganie" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="Dystans: 10.01 km | Czas: 55:10" TextColor="#00E676" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <Label Text="Data: 23.10.2024" TextColor="#888" FontSize="12" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Margin="0,5" Padding="20" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">
+                <VerticalStackLayout>
+                    <Label Text="Sprinty na bieżni" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                    <Label Text="Dystans: 3.50 km | Czas: 15:20" TextColor="#00E676" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <Label Text="Data: 20.10.2024" TextColor="#888" FontSize="12" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

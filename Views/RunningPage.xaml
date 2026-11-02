@@ -1,56 +1,98 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="Projekt_c4.Views.RunningPage"
-             Title="Bieg"
-             BackgroundColor="#121212">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#16181F">
 
-    <Grid RowDefinitions="*, Auto">
+    <Grid>
+        <!-- PRAWIDZIWA MAPA -->
+        <maps:Map x:Name="RunMap" IsShowingUser="True" MapType="Street" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
 
-        <!-- Tu w przyszłości wstawimy kontrolkę Mapy (Microsoft.Maui.Controls.Maps) -->
-        <Frame Grid.Row="0" Margin="15" CornerRadius="15" BackgroundColor="#2A2A2A" BorderColor="#444">
-            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                <Image Source="dotnet_bot.png" HeightRequest="100" Opacity="0.3" Margin="0,0,0,20"/>
-                <Label Text="Miejsce na Mapę (GPS)"
-                       TextColor="#888"
-                       FontSize="20"
-                       FontAttributes="Bold"
-                       HorizontalOptions="Center" />
-            </VerticalStackLayout>
-        </Frame>
+        <Grid RowDefinitions="Auto, *">
+            <!-- GÓRNY PASEK (NAŁOŻONY NA MAPĘ) -->
+            <Grid Grid.Row="0" Margin="15,40,15,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <!-- Panel nawigacyjny ze stoperem -->
-        <Frame Grid.Row="1" BackgroundColor="#1E1E1E" CornerRadius="30" Margin="0,-20,0,0" Padding="20">
-            <VerticalStackLayout Spacing="15">
+                <Frame Grid.Column="0" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#1E1E1E" Padding="0" HasShadow="False" BorderColor="Transparent">
+                    <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18"/>
+                </Frame>
 
-                <Grid ColumnDefinitions="*, *, *">
-                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
-                        <Label Text="0.00" FontSize="32" FontAttributes="Bold" TextColor="White" />
-                        <Label Text="KILOMETRY" FontSize="12" TextColor="LightGray" />
+                <Label Grid.Column="1" Text="Outdoor Run" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black" FontAttributes="Bold" FontSize="20" />
+
+                <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="5" BackgroundColor="#DD000000" Padding="10,5">
+                    <Label Text="◎" TextColor="#00E676" FontSize="18" VerticalOptions="Center"/>
+                    <Label Text="GPS" TextColor="#00E676" FontSize="16" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!-- ZWIJANY DOLNY PANEL STATYSTYK -->
+            <Frame x:Name="BottomPanel" Grid.Row="1" BackgroundColor="#1A1D24" CornerRadius="30" Margin="0,0,0,-40" Padding="25" VerticalOptions="End" HasShadow="True" BorderColor="Transparent">
+
+                <!-- Gesty Pan dla całego panelu, zapewniające natychmiastową reakcję -->
+                <Frame.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="OnPanUpdated" />
+                </Frame.GestureRecognizers>
+
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Uchwyt (Drag handle) -->
+                    <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="#444" HorizontalOptions="Center" Margin="0,0,0,20"/>
+
+                    <!-- Ten kontener będzie ukrywany przez animację TranslateTo panelu (suwanie z dołu) -->
+                    <VerticalStackLayout x:Name="StatsContent">
+                        <!-- Główne liczby -->
+                        <Grid ColumnDefinitions="*, *">
+                            <!-- Dystans -->
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label x:Name="DistanceLabel" Text="00.00" FontSize="65" FontAttributes="Bold" TextColor="White" />
+                                <Label Text="km" FontSize="24" FontAttributes="Bold" TextColor="#00E676" Margin="0,-15,0,0" />
+                            </VerticalStackLayout>
+
+                            <!-- Czas i Tempo -->
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                                <Label x:Name="DurationLabel" Text="00:00" FontSize="40" FontAttributes="Bold" TextColor="White" HorizontalOptions="End" />
+                                <Label Text="Duration" FontSize="14" TextColor="#888" HorizontalOptions="End" Margin="0,-5,0,15"/>
+
+                                <Label x:Name="PaceLabel" Text="00'00&quot;" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="End" />
+                                <Label Text="Avg Pace" FontSize="12" TextColor="#888" HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Karta Kroków -->
+                        <Frame BackgroundColor="#222731" CornerRadius="25" Padding="20" HasShadow="False" BorderColor="Transparent" Margin="0,20,0,0">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label Grid.Column="0" Text="Steps" TextColor="#888" FontSize="14" VerticalOptions="Start"/>
+
+                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="👟" FontSize="32" HorizontalOptions="Center" Margin="0,0,0,10"/>
+                                    <Label x:Name="StepsLabel" Text="0" FontSize="40" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
+                                    <Label Text="steps" FontSize="14" TextColor="#888" HorizontalOptions="Center"/>
+                                    <Label Text="Goal: 10,000" FontSize="12" TextColor="#555" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
-                        <Label Text="00:00" FontSize="32" FontAttributes="Bold" TextColor="White" />
-                        <Label Text="CZAS" FontSize="12" TextColor="LightGray" />
-                    </VerticalStackLayout>
+                    <!-- Przycisk Start/Stop nie zwija się, zawsze jest widoczny! -->
+                    <Button x:Name="ActionBtn"
+                            Text="START"
+                            BackgroundColor="#00E676"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            CornerRadius="30"
+                            HeightRequest="60"
+                            Margin="0,20,0,20"
+                            Clicked="OnActionClicked" />
 
-                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
-                        <Label Text="0.0" FontSize="32" FontAttributes="Bold" TextColor="White" />
-                        <Label Text="TEMPO (MIN/KM)" FontSize="12" TextColor="LightGray" />
-                    </VerticalStackLayout>
-                </Grid>
-
-                <Button Text="ROZPOCZNIJ BIEG"
-                        CornerRadius="25"
-                        HeightRequest="50"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        Margin="0,15,0,0"
-                        Clicked="OnStartRunClicked"/>
-            </VerticalStackLayout>
-        </Frame>
-
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
     </Grid>
 </ContentPage>
