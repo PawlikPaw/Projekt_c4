@@ -21,7 +21,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>Projekt_c4</ApplicationTitle>
+		<ApplicationTitle>Runnner</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.projekt_c4</ApplicationId>
@@ -40,10 +40,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#16181F" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\logo_xd.svg" Color="#16181F" />
 
-		<!-- Splash Screen (puste by ukryć robota, dopóki nie wrzucisz własnego pliku logo.svg!) -->
-		<MauiSplashScreen Include="Resources\AppIcon\appicon.svg" Color="#16181F" BaseSize="128,128" />
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\AppIcon\logo_xd.svg" Color="#16181F" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -61,6 +61,8 @@
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
+		<PackageReference Include="System.Text.Json" Version="10.0.14" />
 	</ItemGroup>
 
 </Project>

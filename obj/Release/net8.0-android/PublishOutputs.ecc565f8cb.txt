@@ -1,0 +1,4 @@
+C:\Users\sperm\StudioProjects\Projekt_c4\bin\Release\net8.0-android\publish\com.companyname.projekt_c4-Signed.aab
+C:\Users\sperm\StudioProjects\Projekt_c4\bin\Release\net8.0-android\publish\com.companyname.projekt_c4.aab
+C:\Users\sperm\StudioProjects\Projekt_c4\bin\Release\net8.0-android\publish\com.companyname.projekt_c4-Signed.apk
+C:\Users\sperm\StudioProjects\Projekt_c4\bin\Release\net8.0-android\publish\_Microsoft.Android.Resource.Designer.dll

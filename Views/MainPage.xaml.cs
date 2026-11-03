@@ -1,5 +1,7 @@
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.Maui.Controls;
+using Projekt_c4.Models;
 
 namespace Projekt_c4.Views
 {
@@ -10,21 +12,125 @@ namespace Projekt_c4.Views
             InitializeComponent();
         }
 
-        private void OnLoginClicked(object sender, EventArgs e)
+        private async void OnLoginClicked(object sender, EventArgs e)
         {
-            // Po kliknięciu w "Zaloguj" ukrywamy widok logowania i pokazujemy profil!
+            string email = EmailEntry.Text?.Trim() ?? "";
+            string password = PasswordEntry.Text ?? "";
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                ErrorLabel.Text = "Wprowadź email i hasło.";
+                ErrorLabel.IsVisible = true;
+                return;
+            }
+
+            var user = await App.Database.GetUserAsync(email, password);
+            if (user != null)
+            {
+                if (ViewModels.MainViewModel.Instance != null)
+                {
+                    if (!string.IsNullOrEmpty(user.FirstName))
+                        ViewModels.MainViewModel.Instance.CurrentUserName = user.FirstName;
+
+                    ViewModels.MainViewModel.Instance.CurrentUserId = user.Id;
+                    await ViewModels.MainViewModel.Instance.LoadWorkoutsAsync();
+                }
+
+                ErrorLabel.IsVisible = false;
+                LoginView.IsVisible = false;
+                ProfileView.IsVisible = true;
+            }
+            else
+            {
+                ErrorLabel.Text = "Nieprawidłowy email lub hasło.";
+                ErrorLabel.IsVisible = true;
+            }
+        }
+
+        private void OnShowRegisterClicked(object sender, EventArgs e)
+        {
             LoginView.IsVisible = false;
-            ProfileView.IsVisible = true;
+            RegisterView.IsVisible = true;
         }
 
-        private async void OnAddWorkoutClicked(object sender, EventArgs e)
+        private void OnShowLoginClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new AddWorkoutPage());
+            RegisterView.IsVisible = false;
+            LoginView.IsVisible = true;
         }
 
-        private async void OnWorkoutTapped(object sender, EventArgs e)
+        private void OnLogoutClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new WorkoutDetailsPage());
+            // Resetujemy formularze i chowamy profil
+            EmailEntry.Text = string.Empty;
+            PasswordEntry.Text = string.Empty;
+            ProfileView.IsVisible = false;
+            LoginView.IsVisible = true;
+            if (ViewModels.MainViewModel.Instance != null)
+            {
+                ViewModels.MainViewModel.Instance.CurrentUserName = "Biegaczu";
+                ViewModels.MainViewModel.Instance.CurrentUserId = 0;
+                ViewModels.MainViewModel.Instance.Workouts.Clear();
+            }
+        }
+
+        private async void OnRegisterConfirmClicked(object sender, EventArgs e)
+        {
+            string firstName = RegFirstNameEntry.Text?.Trim() ?? "";
+            string lastName = RegLastNameEntry.Text?.Trim() ?? "";
+            string email = RegEmailEntry.Text?.Trim() ?? "";
+            string password = RegPasswordEntry.Text ?? "";
+            string passwordConfirm = RegPasswordConfirmEntry.Text ?? "";
+
+            // Prosta walidacja pustych pół i formatu @
+            if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                RegisterErrorLabel.Text = "Wypełnij wszystkie wymagane pola.";
+                RegisterErrorLabel.IsVisible = true;
+                return;
+            }
+
+            // Poprawiona walidacja używająca wyrażeń regularnych (Regex) do pełnej weryfikacji maila
+            var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (!Regex.IsMatch(email, emailPattern))
+            {
+                RegisterErrorLabel.Text = "Podaj poprawny adres e-mail (np. adres@gmail.com).";
+                RegisterErrorLabel.IsVisible = true;
+                return;
+            }
+
+            if (password != passwordConfirm)
+            {
+                RegisterErrorLabel.Text = "Hasła nie są identyczne.";
+                RegisterErrorLabel.IsVisible = true;
+                return;
+            }
+
+            var existingUser = await App.Database.GetUserByEmailAsync(email);
+            if (existingUser != null)
+            {
+                RegisterErrorLabel.Text = "Konto z tym adresem już istnieje!";
+                RegisterErrorLabel.IsVisible = true;
+            }
+            else
+            {
+                await App.Database.SaveUserAsync(new User
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    PasswordHash = password
+                });
+
+                RegisterView.IsVisible = false;
+                LoginView.IsVisible = true;
+                ErrorLabel.TextColor = Colors.Green;
+                ErrorLabel.Text = "Zarejestrowano pomyślnie! Zaloguj się.";
+                ErrorLabel.IsVisible = true;
+
+                // Automatyczne wypełnienie maila dla wygody
+                EmailEntry.Text = email;
+            }
         }
     }
 }

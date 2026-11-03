@@ -87,6 +87,10 @@ namespace Projekt_c4.Views
                             runRoute.Geopath.Add(location);
                             totalDistance += distance;
                             DistanceLabel.Text = totalDistance.ToString("00.00");
+
+                            // Symulowany krokomierz! Przeciętnie z 1 kilometra wychodzi ~1300 kroków
+                            int steps = (int)(totalDistance * 1300);
+                            StepsLabel.Text = steps.ToString("N0");
                         }
                     }
                     lastLocation = location;
@@ -106,41 +110,49 @@ namespace Projekt_c4.Views
             switch (e.StatusType)
             {
                 case GestureStatus.Running:
-                    // Przesuwanie na żywo razem z ruchem palca
                     if (e.TotalY > 0 && isPanelExpanded) // Przesunięcie w dół
                     {
                         BottomPanel.TranslationY = e.TotalY;
                     }
                     else if (e.TotalY < 0 && !isPanelExpanded) // Przesunięcie w górę
                     {
-                        // Ograniczamy ruch do oryginalnej pozycji Y (gdzie TranslationY = 0)
-                        double newY = 320 + e.TotalY; // 320 to oszacowana wysokość zwijanego elementu
+                        double newY = 400 + e.TotalY; // Ukryty znacznie mocniej u dołu
                         if (newY >= 0)
                             BottomPanel.TranslationY = newY;
                     }
                     break;
 
                 case GestureStatus.Completed:
-                    // Zakończenie gestu - decydujemy czy ukrywamy czy pokazujemy panel
                     if (BottomPanel.TranslationY > 100 && isPanelExpanded)
                     {
-                        // Ukryj panel
-                        await BottomPanel.TranslateTo(0, 320, 250, Easing.CubicOut);
+                        // Całkowite zsunięcie w dół, widoczny pozostaje tylko przycisk "uchwyt"
+                        await BottomPanel.TranslateTo(0, 400, 250, Easing.CubicOut);
                         isPanelExpanded = false;
                     }
-                    else if (BottomPanel.TranslationY < 220 && !isPanelExpanded)
+                    else if (BottomPanel.TranslationY < 300 && !isPanelExpanded)
                     {
-                        // Pokaż panel (wjedź do góry na TranslationY = 0)
+                        // Powrót statystyk na górę
                         await BottomPanel.TranslateTo(0, 0, 250, Easing.CubicOut);
                         isPanelExpanded = true;
                     }
                     else
                     {
-                        // Powrót do poprzedniego stanu, bo palec pokonał za krótką drogę
-                        await BottomPanel.TranslateTo(0, isPanelExpanded ? 0 : 320, 150, Easing.Linear);
+                        await BottomPanel.TranslateTo(0, isPanelExpanded ? 0 : 400, 150, Easing.Linear);
                     }
                     break;
             }
+        }
+
+        private async void OnProfileIconTapped(object sender, EventArgs e)
+        {
+            // Przeniesienie do zakładki "Profil" przy użyciu zdefiniowanego Route
+            await Shell.Current.GoToAsync("//ProfileTab");
+        }
+
+        private async void OnCenterMapTapped(object sender, EventArgs e)
+        {
+            // Opcja ręcznego wymuszania centrowania mapy na naszej lokalizacji
+            await RequestLocationPermission();
         }
 
         private void OnActionClicked(object sender, EventArgs e)
@@ -170,6 +182,30 @@ namespace Projekt_c4.Views
                 ActionBtn.TextColor = Colors.Black;
 
                 timer.Stop();
+
+                // Zapisz bieg do bazy danych!
+                var newWorkout = new Models.Workout
+                {
+                    UserId = ViewModels.MainViewModel.Instance?.CurrentUserId ?? 0,
+                    Title = "Bieg (Outdoor)",
+                    Date = DateTime.Now,
+                    DistanceKm = totalDistance,
+                    Duration = DateTime.Now - startTime,
+                    PaceString = PaceLabel.Text,
+                    Route = new System.Collections.Generic.List<Microsoft.Maui.Devices.Sensors.Location>(runRoute.Geopath)
+                };
+
+                // Czekamy na zapisanie do SQLite i odświeżamy ViewModel
+                App.Database.SaveWorkoutAsync(newWorkout).ContinueWith(t =>
+                {
+                    if (ViewModels.MainViewModel.Instance != null)
+                    {
+                        MainThread.BeginInvokeOnMainThread(async () =>
+                        {
+                            await ViewModels.MainViewModel.Instance.LoadWorkoutsAsync();
+                        });
+                    }
+                });
             }
         }
     }
