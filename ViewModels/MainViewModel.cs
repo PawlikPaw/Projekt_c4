@@ -2,29 +2,52 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Projekt_c4.Models;
 
 namespace Projekt_c4.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        public static MainViewModel Instance { get; private set; }
         public ObservableCollection<Workout> Workouts { get; set; }
+
+        // Zmienna trzymająca imię aktualnie zalogowanego użytkownika
+        private string _currentUserName = "Biegaczu";
+        public string CurrentUserName
+        {
+            get => _currentUserName;
+            set
+            {
+                _currentUserName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int CurrentUserId { get; set; }
 
         public MainViewModel()
         {
-            Workouts = new ObservableCollection<Workout>
+            Instance = this;
+            Workouts = new ObservableCollection<Workout>();
+            LoadWorkoutsAsync();
+        }
+
+        // Zaciąganie z bazy dla konkretnego użytkownika
+        public async Task LoadWorkoutsAsync()
+        {
+            if (CurrentUserId == 0)
             {
-                new Workout
-                {
-                    Title = "Trening klatki i tricepsa",
-                    Date = DateTime.Now,
-                    Exercises = new System.Collections.Generic.List<Exercise>
-                    {
-                        new Exercise { Name = "Wyciskanie sztangi leżąc", Sets = 4, Reps = 10, WeightKg = 80 },
-                        new Exercise { Name = "Pompki na poręczach (Dipy)", Sets = 3, Reps = 12, WeightKg = 0 }
-                    }
-                }
-            };
+                Workouts.Clear();
+                return;
+            }
+
+            var dbWorkouts = await App.Database.GetWorkoutsAsync(CurrentUserId);
+            Workouts.Clear();
+            foreach (var workout in dbWorkouts)
+            {
+                Workouts.Add(workout);
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -7,26 +7,21 @@
     Shell.TabBarBackgroundColor="#16181F"
     Shell.TabBarTitleColor="#00E676"
     Shell.TabBarUnselectedColor="#555555"
-    Title="TreningApp">
+    Title="Runnner">
 
     <TabBar>
         <!-- ZAKŁADKA 1: EKRAN BIEGANIA -->
-        <Tab Title="Run" Icon="dotnet_bot.png">
+        <Tab Route="RunningTab" Title="Run" Icon="dotnet_bot.png">
             <ShellContent ContentTemplate="{DataTemplate views:RunningPage}" />
         </Tab>
 
         <!-- NOWA ZAKŁADKA: TRASY -->
-        <Tab Title="Trasy" Icon="dotnet_bot.png">
+        <Tab Route="RoutesTab" Title="Trasy" Icon="dotnet_bot.png">
             <ShellContent ContentTemplate="{DataTemplate views:SavedRoutesPage}" />
         </Tab>
 
-        <!-- ZAKŁADKA 2: BAZA ĆWICZEŃ (FEED) -->
-        <Tab Title="Siła" Icon="dotnet_bot.png">
-            <ShellContent ContentTemplate="{DataTemplate views:ExercisesDatabasePage}" />
-        </Tab>
-
         <!-- ZAKŁADKA 3: PROFIL / HISTORIA (DAWNY MAINPAGE) -->
-        <Tab Title="Profil" Icon="dotnet_bot.png">
+        <Tab x:Name="ProfileTab" Route="ProfileTab" Title="Profil" Icon="dotnet_bot.png">
             <ShellContent ContentTemplate="{DataTemplate views:MainPage}" />
         </Tab>
     </TabBar>

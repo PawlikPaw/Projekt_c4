@@ -7,28 +7,25 @@
              BackgroundColor="#16181F">
 
     <Grid>
-        <!-- PRAWIDZIWA MAPA -->
-        <maps:Map x:Name="RunMap" IsShowingUser="True" MapType="Street" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"/>
+        <!-- PRAWIDZIWA MAPA Z LOKALIZACJĄ -->
+        <maps:Map x:Name="RunMap" IsShowingUser="True" MapType="Street" ZIndex="1" />
 
-        <Grid RowDefinitions="Auto, *">
-            <!-- GÓRNY PASEK (NAŁOŻONY NA MAPĘ) -->
-            <Grid Grid.Row="0" Margin="15,40,15,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Frame Grid.Column="0" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#1E1E1E" Padding="0" HasShadow="False" BorderColor="Transparent">
-                    <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18"/>
+        <Grid RowDefinitions="Auto, *" ZIndex="2">
+            <!-- GÓRNY PASEK (TYLKO IKONA PROFILU) -->
+            <Grid Grid.Row="0" Margin="15,40,15,0" ZIndex="10">
+                <Frame HorizontalOptions="Start" WidthRequest="45" HeightRequest="45" CornerRadius="22" BackgroundColor="#1A1D24" Padding="0" HasShadow="True" BorderColor="Transparent">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnProfileIconTapped" />
+                    </Frame.GestureRecognizers>
+                    <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20"/>
                 </Frame>
-
-                <Label Grid.Column="1" Text="Outdoor Run" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black" FontAttributes="Bold" FontSize="20" />
-
-                <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="5" BackgroundColor="#DD000000" Padding="10,5">
-                    <Label Text="◎" TextColor="#00E676" FontSize="18" VerticalOptions="Center"/>
-                    <Label Text="GPS" TextColor="#00E676" FontSize="16" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
+                <!-- Przycisk do centrowania mapy wymuszający geolokalizację na emulatorze -->
+                <Frame HorizontalOptions="End" WidthRequest="45" HeightRequest="45" CornerRadius="22" BackgroundColor="#1A1D24" Padding="0" HasShadow="True" BorderColor="Transparent">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCenterMapTapped" />
+                    </Frame.GestureRecognizers>
+                    <Label Text="📍" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20"/>
+                </Frame>
             </Grid>
 
             <!-- ZWIJANY DOLNY PANEL STATYSTYK -->
@@ -64,16 +61,21 @@
                             </VerticalStackLayout>
                         </Grid>
 
-                        <!-- Karta Kroków -->
-                        <Frame BackgroundColor="#222731" CornerRadius="25" Padding="20" HasShadow="False" BorderColor="Transparent" Margin="0,20,0,0">
-                            <Grid ColumnDefinitions="Auto, *">
-                                <Label Grid.Column="0" Text="Steps" TextColor="#888" FontSize="14" VerticalOptions="Start"/>
+                        <!-- Elegancka Karta Kroków (Przeprojektowana) -->
+                        <Frame BackgroundColor="#222731" CornerRadius="25" Padding="20" HasShadow="True" BorderColor="Transparent" Margin="0,20,0,0">
+                            <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                                <Frame Grid.Column="0" BackgroundColor="#1A1D24" CornerRadius="25" WidthRequest="50" HeightRequest="50" Padding="0" HasShadow="False" BorderColor="Transparent" VerticalOptions="Center">
+                                    <Label Text="👟" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Frame>
 
-                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label Text="👟" FontSize="32" HorizontalOptions="Center" Margin="0,0,0,10"/>
-                                    <Label x:Name="StepsLabel" Text="0" FontSize="40" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                                    <Label Text="steps" FontSize="14" TextColor="#888" HorizontalOptions="Center"/>
-                                    <Label Text="Goal: 10,000" FontSize="12" TextColor="#555" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0">
+                                    <Label x:Name="StepsLabel" Text="0" FontSize="32" FontAttributes="Bold" TextColor="White" />
+                                    <Label Text="Kroki dzisiaj" FontSize="12" TextColor="#888" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="Cel:" FontSize="12" TextColor="#555" HorizontalOptions="End"/>
+                                    <Label Text="10 000" FontSize="14" FontAttributes="Bold" TextColor="#00E676" HorizontalOptions="End"/>
                                 </VerticalStackLayout>
                             </Grid>
                         </Frame>
