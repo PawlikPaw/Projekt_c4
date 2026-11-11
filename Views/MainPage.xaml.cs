@@ -76,6 +76,26 @@ namespace Projekt_c4.Views
             LoginView.IsVisible = true;
         }
 
+        private async void OnEntryFocused(object sender, FocusEventArgs e)
+        {
+            if (sender is Entry entry && entry.Parent is Frame frame)
+            {
+                frame.BorderColor = Color.FromArgb("#00E676"); // Neonowy zielony
+                // Lekka animacja powiększenia (Scale) i podbicia
+                await frame.ScaleTo(1.02, 100, Easing.CubicOut);
+            }
+        }
+
+        private async void OnEntryUnfocused(object sender, FocusEventArgs e)
+        {
+            if (sender is Entry entry && entry.Parent is Frame frame)
+            {
+                frame.BorderColor = Colors.Transparent;
+                // Powrót do standardowej wielkości
+                await frame.ScaleTo(1.0, 100, Easing.CubicIn);
+            }
+        }
+
         private void OnLogoutClicked(object sender, EventArgs e)
         {
             // Resetujemy formularze i chowamy profil

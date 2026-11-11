@@ -16,12 +16,18 @@
             <VerticalStackLayout VerticalOptions="Center" Spacing="20">
                 <Image Source="logo_xd.svg" HeightRequest="120" HorizontalOptions="Center" Margin="0,0,0,10"/>
                 <Label Text="Runnner" FontSize="32" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                <Label Text="aby śledzić swoje treningi" FontSize="16" TextColor="#888" HorizontalOptions="Center" Margin="0,-10,0,20"/>
+                <Label Text="Zaloguj się aby śledzić swoje treningi" FontSize="16" TextColor="#888" HorizontalOptions="Center" Margin="0,-10,0,20"/>
 
                 <Label x:Name="ErrorLabel" TextColor="Red" IsVisible="False" HorizontalOptions="Center" />
 
-                <Entry x:Name="EmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" Keyboard="Email" />
-                <Entry x:Name="PasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" />
+                <!-- Pola Logowania -->
+                <Frame x:Name="EmailFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="EmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Keyboard="Email" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
+
+                <Frame x:Name="PasswordFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="PasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
 
                 <Button Text="ZALOGUJ" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="16" Clicked="OnLoginClicked" Margin="0,10,0,0"/>
 
@@ -36,11 +42,25 @@
 
                 <Label x:Name="RegisterErrorLabel" TextColor="Red" IsVisible="False" HorizontalOptions="Center" />
 
-                <Entry x:Name="RegFirstNameEntry" Placeholder="Imię" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" />
-                <Entry x:Name="RegLastNameEntry" Placeholder="Nazwisko" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" />
-                <Entry x:Name="RegEmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" Keyboard="Email" />
-                <Entry x:Name="RegPasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" />
-                <Entry x:Name="RegPasswordConfirmEntry" Placeholder="Powtórz hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="#222731" />
+                <Frame x:Name="RegFirstNameFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="RegFirstNameEntry" Placeholder="Imię" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
+
+                <Frame x:Name="RegLastNameFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="RegLastNameEntry" Placeholder="Nazwisko" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
+
+                <Frame x:Name="RegEmailFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="RegEmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Keyboard="Email" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
+
+                <Frame x:Name="RegPasswordFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="RegPasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
+
+                <Frame x:Name="RegPasswordConfirmFrame" CornerRadius="25" Padding="15,5" BackgroundColor="#222731" HasShadow="False" BorderColor="Transparent">
+                    <Entry x:Name="RegPasswordConfirmEntry" Placeholder="Powtórz hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused" />
+                </Frame>
 
                 <Button Text="ZAREJESTRUJ" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="16" Clicked="OnRegisterConfirmClicked" Margin="0,15,0,0"/>
 

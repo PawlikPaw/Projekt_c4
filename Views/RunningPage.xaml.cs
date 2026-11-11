@@ -77,7 +77,7 @@ namespace Projekt_c4.Views
             {
                 if (status == PermissionStatus.Granted)
                 {
-                    // Odblokowujemy domyślną kropkę Google
+                    // Odblokowujemy domyślną kropkę Google i jej natywny przycisk centrowania mapy
                     RunMap.IsShowingUser = true;
 
                     // Wyśrodkuj mapę na obecnej lokalizacji startowej
@@ -216,12 +216,6 @@ namespace Projekt_c4.Views
         {
             // Przeniesienie do zakładki "Profil" przy użyciu zdefiniowanego Route
             await Shell.Current.GoToAsync("//ProfileTab");
-        }
-
-        private async void OnCenterMapTapped(object sender, EventArgs e)
-        {
-            // Opcja ręcznego wymuszania centrowania mapy na naszej lokalizacji
-            await RequestLocationPermission();
         }
 
         private void OnActionClicked(object sender, EventArgs e)

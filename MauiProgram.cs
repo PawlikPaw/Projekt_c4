@@ -20,6 +20,14 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
+		// Usuwamy fioletowe podkreślenie domyślne dla Androida na wszystkich polach Entry
+		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("NoUnderline", (h, v) =>
+		{
+#if ANDROID
+			h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+		});
+
 		return builder.Build();
 	}
 }
