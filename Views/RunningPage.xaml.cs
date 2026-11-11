@@ -16,6 +16,9 @@ namespace Projekt_c4.Views
         private Location lastLocation;
         private double totalDistance = 0;
 
+        // Customowa, NIEZAWODNA kropka wskazująca pozycję gracza
+        private Circle userPositionMarker;
+
         public RunningPage()
         {
             InitializeComponent();
@@ -28,9 +31,18 @@ namespace Projekt_c4.Views
             };
             RunMap.MapElements.Add(runRoute);
 
-            // Inicjalizacja zegara (Stopera)
+            // Inicjalizacja naszej kropki gracza
+            userPositionMarker = new Circle
+            {
+                FillColor = Color.FromArgb("#FF2196F3"), // Niebieska
+                StrokeColor = Color.FromArgb("#FFFFFFFF"), // Biała obwódka
+                StrokeWidth = 4,
+                Radius = Distance.FromMeters(15) // Kółeczko wielkości 15m
+            };
+
+            // Inicjalizacja pętli odświeżającej GPS
             timer = Dispatcher.CreateTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Interval = TimeSpan.FromSeconds(2); // Sprawdzaj stabilnie co 2 sekundy
             timer.Tick += Timer_Tick;
         }
 
@@ -38,6 +50,19 @@ namespace Projekt_c4.Views
         {
             base.OnAppearing();
             await RequestLocationPermission();
+
+            // Zawsze uruchamiaj lokalizację gdy jesteśmy na ekranie, by gracz widział gdzie jest przed startem!
+            timer.Start();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            // Wyłącz odświeżanie w tle, jeśli gracz wyszedł z ekranu i nie jest w trakcie biegu
+            if (!isRunning)
+            {
+                timer.Stop();
+            }
         }
 
         private async Task RequestLocationPermission()
@@ -45,17 +70,34 @@ namespace Projekt_c4.Views
             var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
             if (status != PermissionStatus.Granted)
             {
-                await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             }
 
             try
             {
-                // Wyśrodkuj mapę na obecnej lokalizacji startowej
-                var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5));
-                var location = await Geolocation.GetLocationAsync(request);
-                if (location != null)
+                if (status == PermissionStatus.Granted)
                 {
-                    RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.5)));
+                    // Odblokowujemy domyślną kropkę Google
+                    RunMap.IsShowingUser = true;
+
+                    // Wyśrodkuj mapę na obecnej lokalizacji startowej
+                    var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5));
+                    var location = await Geolocation.GetLocationAsync(request);
+
+                    if (location == null)
+                        location = await Geolocation.GetLastKnownLocationAsync();
+
+                    if (location != null)
+                    {
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            userPositionMarker.Center = location;
+                            if (!RunMap.MapElements.Contains(userPositionMarker))
+                                RunMap.MapElements.Add(userPositionMarker);
+
+                            RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.5)));
+                        });
+                    }
                 }
             }
             catch { /* Ignoruj błędy lokalizacji na symulatorze */ }
@@ -63,43 +105,70 @@ namespace Projekt_c4.Views
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            var duration = DateTime.Now - startTime;
-            DurationLabel.Text = duration.ToString(@"mm\:ss");
+            if (isRunning)
+            {
+                // Aktualizujemy etykietę czasu tylko gdy trwa bieg
+                var duration = DateTime.Now - startTime;
+                DurationLabel.Text = duration.ToString(@"mm\:ss");
+            }
 
-            // W tle pobieramy lokalizację co kilka sekund
+            // W tle pobieramy lokalizację przez cały czas
             UpdateLocation();
         }
 
+        private bool isCheckingLocation = false; // Blokada przed zatykaniem się żądań GPS
+
         private async void UpdateLocation()
         {
+            if (isCheckingLocation)
+                return;
+
+            isCheckingLocation = true;
+
             try
             {
-                var request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(3));
+                var request = new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(2));
                 var location = await Geolocation.GetLocationAsync(request);
+
+                if (location == null)
+                    location = await Geolocation.GetLastKnownLocationAsync();
 
                 if (location != null)
                 {
-                    if (lastLocation != null)
+                    MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        var distance = Location.CalculateDistance(lastLocation, location, DistanceUnits.Kilometers);
-                        if (distance > 0.005) // filtr szumu GPS
+                        userPositionMarker.Center = location;
+                        if (!RunMap.MapElements.Contains(userPositionMarker))
+                            RunMap.MapElements.Add(userPositionMarker);
+
+                        // Liczymy dystans i rysujemy trasę TYLKO gdy kliknięto START
+                        if (isRunning && lastLocation != null)
                         {
-                            runRoute.Geopath.Add(location);
-                            totalDistance += distance;
-                            DistanceLabel.Text = totalDistance.ToString("00.00");
+                            var distance = Location.CalculateDistance(lastLocation, location, DistanceUnits.Kilometers);
+                            if (distance > 0.002)
+                            {
+                                runRoute.Geopath.Add(location);
+                                totalDistance += distance;
+                                DistanceLabel.Text = totalDistance.ToString("0.00");
 
-                            // Symulowany krokomierz! Przeciętnie z 1 kilometra wychodzi ~1300 kroków
-                            int steps = (int)(totalDistance * 1300);
-                            StepsLabel.Text = steps.ToString("N0");
+                                int steps = (int)(totalDistance * 1300);
+                                StepsLabel.Text = steps.ToString("N0");
+                            }
                         }
-                    }
-                    lastLocation = location;
 
-                    // Podążaj kamerą za graczem
-                    RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.3)));
+                        // Aktualizujemy "stary punkt" na bieżąco, by śledzić pozycję z kamerą
+                        lastLocation = location;
+
+                        // Centruj płynnie mapę na nowej pozycji
+                        RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.3)));
+                    });
                 }
             }
             catch { }
+            finally
+            {
+                isCheckingLocation = false;
+            }
         }
 
         private bool isPanelExpanded = true;
@@ -157,6 +226,12 @@ namespace Projekt_c4.Views
 
         private void OnActionClicked(object sender, EventArgs e)
         {
+            if (ViewModels.MainViewModel.Instance?.CurrentUserId == 0)
+            {
+                DisplayAlert("Wymagane logowanie", "Zanim zaczniesz biegać, przejdź do zakładki Profil i zaloguj się na swoje konto, by móc zapisać trening!", "OK");
+                return;
+            }
+
             if (!isRunning)
             {
                 // Start Biegu
@@ -164,6 +239,9 @@ namespace Projekt_c4.Views
                 ActionBtn.Text = "STOP";
                 ActionBtn.BackgroundColor = Colors.Red;
                 ActionBtn.TextColor = Colors.White;
+
+                // Zapobieganie wygaszaniu ekranu w kieszeni i usypianiu modułu GPS!
+                Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = true;
 
                 startTime = DateTime.Now;
                 runRoute.Geopath.Clear();
@@ -180,6 +258,9 @@ namespace Projekt_c4.Views
                 ActionBtn.Text = "START";
                 ActionBtn.BackgroundColor = Color.FromArgb("#00E676");
                 ActionBtn.TextColor = Colors.Black;
+
+                // Ekran znowu może się normalnie wygaszać
+                Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = false;
 
                 timer.Stop();
 

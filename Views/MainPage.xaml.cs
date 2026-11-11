@@ -10,6 +10,18 @@ namespace Projekt_c4.Views
         public MainPage()
         {
             InitializeComponent();
+            CheckLoginState();
+        }
+
+        private void CheckLoginState()
+        {
+            // Jeżeli jesteśmy już zalogowani (sesja przetrwała restart), pokazuj od razu profil
+            int savedUserId = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserId", 0);
+            if (savedUserId != 0)
+            {
+                LoginView.IsVisible = false;
+                ProfileView.IsVisible = true;
+            }
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)
@@ -33,6 +45,11 @@ namespace Projekt_c4.Views
                         ViewModels.MainViewModel.Instance.CurrentUserName = user.FirstName;
 
                     ViewModels.MainViewModel.Instance.CurrentUserId = user.Id;
+
+                    // Zapisujemy sesję do stałej pamięci telefonu by przetrwała wyłączenie aplikacji
+                    Microsoft.Maui.Storage.Preferences.Default.Set("CurrentUserId", user.Id);
+                    Microsoft.Maui.Storage.Preferences.Default.Set("CurrentUserName", user.FirstName);
+
                     await ViewModels.MainViewModel.Instance.LoadWorkoutsAsync();
                 }
 
@@ -66,6 +83,11 @@ namespace Projekt_c4.Views
             PasswordEntry.Text = string.Empty;
             ProfileView.IsVisible = false;
             LoginView.IsVisible = true;
+
+            // Wycieramy historię z zapisanej pamięci i sesji
+            Microsoft.Maui.Storage.Preferences.Default.Remove("CurrentUserId");
+            Microsoft.Maui.Storage.Preferences.Default.Remove("CurrentUserName");
+
             if (ViewModels.MainViewModel.Instance != null)
             {
                 ViewModels.MainViewModel.Instance.CurrentUserName = "Biegaczu";

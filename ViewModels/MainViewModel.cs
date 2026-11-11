@@ -30,6 +30,11 @@ namespace Projekt_c4.ViewModels
         {
             Instance = this;
             Workouts = new ObservableCollection<Workout>();
+
+            // Wczytywanie zapisanej sesji (Persist)
+            CurrentUserId = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserId", 0);
+            _currentUserName = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserName", "Biegaczu");
+
             LoadWorkoutsAsync();
         }
 
