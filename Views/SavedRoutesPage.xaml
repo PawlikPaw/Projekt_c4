@@ -13,7 +13,8 @@
     <Grid RowDefinitions="Auto, *">
         <Label Grid.Row="0" Text="Zapisane Trasy" FontSize="26" FontAttributes="Bold" TextColor="White" Margin="20,40,20,10"/>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20,0,20,0">
+        <!-- Włączona detekcja kliknięć (SelectionMode) -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" SelectionMode="Single" SelectionChanged="OnWorkoutSelected" Margin="20,0,20,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame Margin="0,5,0,10" Padding="20" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">

@@ -8,7 +8,7 @@
 
     <Grid>
         <!-- PRAWIDZIWA MAPA Z LOKALIZACJĄ -->
-        <maps:Map x:Name="RunMap" IsShowingUser="True" MapType="Street" ZIndex="1" />
+        <maps:Map x:Name="RunMap" IsShowingUser="False" MapType="Street" ZIndex="1" />
 
         <Grid RowDefinitions="Auto, *" ZIndex="2">
             <!-- GÓRNY PASEK (TYLKO IKONA PROFILU) -->
