@@ -35,6 +35,13 @@ namespace Projekt_c4.ViewModels
             CurrentUserId = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserId", 0);
             _currentUserName = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserName", "Biegaczu");
 
+            // KOD TESTOWY (DEV): Wymuszenie zalogowania na sztywno, żeby nie tracić czasu!
+            if (CurrentUserId == 0)
+            {
+                CurrentUserId = 999;
+                CurrentUserName = "Janusz (Test)";
+            }
+
             LoadWorkoutsAsync();
         }
 

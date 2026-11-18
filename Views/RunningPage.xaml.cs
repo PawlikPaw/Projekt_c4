@@ -210,7 +210,7 @@ namespace Projekt_c4.Views
                     }
                     else if (e.TotalY < 0 && !isPanelExpanded) // Góra
                     {
-                        double newY = 300 + e.TotalY; // StatsContent height to chowamy
+                        double newY = 300 + e.TotalY; // Odwrotność zjazdu w dół
                         if (newY >= 0)
                             BottomPanel.TranslationY = newY;
                     }
@@ -219,14 +219,18 @@ namespace Projekt_c4.Views
                 case GestureStatus.Completed:
                     if (BottomPanel.TranslationY > 100 && isPanelExpanded)
                     {
-                        // Chowanie paneli ze statystykami - przycisk START zawsze wystaje
+                        // Zsuwamy w dół na 300px
                         await BottomPanel.TranslateTo(0, 300, 250, Easing.CubicOut);
                         isPanelExpanded = false;
-                        StatsContent.IsVisible = false;
+
+                        // ZABEZPIECZENIE: NIE ukrywamy całego kontenera ActionBtn! START ma zostać.
+                        // Ale nie możemy użyć IsVisible na Gridzie, bo zaburza autolayout
+                        StatsContent.Opacity = 0; // Znikanie zamiast ucinania!
                     }
                     else if (BottomPanel.TranslationY < 200 && !isPanelExpanded)
                     {
-                        StatsContent.IsVisible = true;
+                        // Przywracamy statystyki i wyjeżdżamy do góry
+                        StatsContent.Opacity = 1;
                         await BottomPanel.TranslateTo(0, 0, 250, Easing.CubicOut);
                         isPanelExpanded = true;
                     }
@@ -305,7 +309,7 @@ namespace Projekt_c4.Views
 
                 var newWorkout = new Models.Workout
                 {
-                    UserId = ViewModels.MainViewModel.Instance?.CurrentUserId ?? 0,
+                    UserId = ViewModels.MainViewModel.Instance?.CurrentUserId ?? 999, // Zabezpieczenie testowe
                     Title = "Bieg (Outdoor)",
                     Date = DateTime.Now,
                     DistanceKm = totalDistance,

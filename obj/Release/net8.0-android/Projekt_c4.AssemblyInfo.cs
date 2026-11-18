@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Projekt_c4")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+207c94470ce965aeb279c59bc4ebb3cda7baa26d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+60e4addef9794672535d690b9ae04a966ca32617")]
 [assembly: System.Reflection.AssemblyProductAttribute("Projekt_c4")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Projekt_c4")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
