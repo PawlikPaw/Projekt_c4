@@ -22,15 +22,12 @@ namespace Projekt_c4.Views
             }
         }
 
-        private async void OnWorkoutSelected(object sender, SelectionChangedEventArgs e)
+        // Metoda do płynnego otwierania historii, wyzwalana natywnym stuknięciem
+        private async void OnRouteTapped(object sender, TappedEventArgs e)
         {
-            // Przechwytujemy kliknięty bieg z listy
-            if (e.CurrentSelection.FirstOrDefault() is Workout selectedWorkout)
+            if (e.Parameter is Workout selectedWorkout)
             {
-                // Odznaczamy element, by móc w niego kliknąć ponownie w przyszłości
-                ((CollectionView)sender).SelectedItem = null;
-
-                // Animowane wjechanie na wierzch nowo zaprogramowanego ekranu "RouteDetailsPage"
+                // Animowane wjechanie na wierzch ekranu "RouteDetailsPage"
                 await Navigation.PushAsync(new RouteDetailsPage(selectedWorkout));
             }
         }

@@ -39,10 +39,22 @@
                 <VerticalStackLayout Spacing="15">
 
                     <!-- Uchwyt (Drag handle) -->
-                    <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="#444" HorizontalOptions="Center" Margin="0,0,0,20"/>
+                    <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="#444" HorizontalOptions="Center" Margin="0,0,0,5"/>
+
+                    <!-- Przycisk Start/Stop zawsze widoczny nad statystykami, blisko kciuka! -->
+                    <Button x:Name="ActionBtn"
+                            Text="START"
+                            BackgroundColor="#00E676"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            CornerRadius="30"
+                            HeightRequest="60"
+                            Margin="0,10,0,5"
+                            Clicked="OnActionClicked" />
 
                     <!-- Ten kontener będzie ukrywany przez animację TranslateTo panelu (suwanie z dołu) -->
-                    <VerticalStackLayout x:Name="StatsContent">
+                    <VerticalStackLayout x:Name="StatsContent" Spacing="15">
                         <!-- Główne liczby -->
                         <Grid ColumnDefinitions="*, *">
                             <!-- Dystans -->
@@ -62,7 +74,7 @@
                         </Grid>
 
                         <!-- Elegancka Karta Kroków (Przeprojektowana) -->
-                        <Frame BackgroundColor="#222731" CornerRadius="25" Padding="20" HasShadow="True" BorderColor="Transparent" Margin="0,20,0,0">
+                        <Frame BackgroundColor="#222731" CornerRadius="25" Padding="20" HasShadow="True" BorderColor="Transparent" Margin="0,10,0,20">
                             <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
                                 <Frame Grid.Column="0" BackgroundColor="#1A1D24" CornerRadius="25" WidthRequest="50" HeightRequest="50" Padding="0" HasShadow="False" BorderColor="Transparent" VerticalOptions="Center">
                                     <Label Text="👟" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center"/>
@@ -80,18 +92,6 @@
                             </Grid>
                         </Frame>
                     </VerticalStackLayout>
-
-                    <!-- Przycisk Start/Stop nie zwija się, zawsze jest widoczny! -->
-                    <Button x:Name="ActionBtn"
-                            Text="START"
-                            BackgroundColor="#00E676"
-                            TextColor="Black"
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            CornerRadius="30"
-                            HeightRequest="60"
-                            Margin="0,20,0,20"
-                            Clicked="OnActionClicked" />
 
                 </VerticalStackLayout>
             </Frame>

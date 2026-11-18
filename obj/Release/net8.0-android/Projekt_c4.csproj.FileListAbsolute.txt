@@ -504,3 +504,4 @@ C:\Users\sperm\StudioProjects\Projekt_c4\obj\Release\net8.0-android\resizetizer\
 C:\Users\sperm\StudioProjects\Projekt_c4\obj\Release\net8.0-android\resizetizer\sp\drawable-xhdpi\logo_xd.png
 C:\Users\sperm\StudioProjects\Projekt_c4\obj\Release\net8.0-android\resizetizer\sp\drawable-xxhdpi\logo_xd.png
 C:\Users\sperm\StudioProjects\Projekt_c4\obj\Release\net8.0-android\resizetizer\sp\drawable-xxxhdpi\logo_xd.png
+C:\Users\sperm\StudioProjects\Projekt_c4\obj\Release\net8.0-android\android\src\crc64f62664462a8937a9\AccelerometerListener.java

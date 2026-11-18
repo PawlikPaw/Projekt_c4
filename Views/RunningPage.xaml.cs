@@ -11,19 +11,22 @@ namespace Projekt_c4.Views
     {
         private bool isRunning = false;
         private DateTime startTime;
-        private IDispatcherTimer timer;
-        private Polyline runRoute;
-        private Location lastLocation;
+        private IDispatcherTimer timer = null!;
+        private Polyline runRoute = null!;
+        private Location? lastLocation;
         private double totalDistance = 0;
 
         // Customowa, NIEZAWODNA kropka wskazująca pozycję gracza
-        private Circle userPositionMarker;
+        private Circle userPositionMarker = null!;
+
+        // Przechowywanie danych o krokach fizycznych
+        private int realSteps = 0;
+        private DateTime lastStepTime = DateTime.MinValue;
 
         public RunningPage()
         {
             InitializeComponent();
 
-            // Konfiguracja linii ścieżki biegu (neonowa zieleń)
             runRoute = new Polyline
             {
                 StrokeColor = Color.FromArgb("#00E676"),
@@ -31,19 +34,43 @@ namespace Projekt_c4.Views
             };
             RunMap.MapElements.Add(runRoute);
 
-            // Inicjalizacja naszej kropki gracza
             userPositionMarker = new Circle
             {
-                FillColor = Color.FromArgb("#FF2196F3"), // Niebieska
-                StrokeColor = Color.FromArgb("#FFFFFFFF"), // Biała obwódka
+                FillColor = Color.FromArgb("#FF2196F3"),
+                StrokeColor = Color.FromArgb("#FFFFFFFF"),
                 StrokeWidth = 4,
-                Radius = Distance.FromMeters(15) // Kółeczko wielkości 15m
+                Radius = Distance.FromMeters(15)
             };
 
-            // Inicjalizacja pętli odświeżającej GPS
             timer = Dispatcher.CreateTimer();
-            timer.Interval = TimeSpan.FromSeconds(2); // Sprawdzaj stabilnie co 2 sekundy
+            timer.Interval = TimeSpan.FromSeconds(2);
             timer.Tick += Timer_Tick;
+        }
+
+        // --- NASŁUCHIWANIE FIZYCZNYCH KROKÓW ZA POMOCĄ AKCELEROMETRU ---
+        private void Accelerometer_ReadingChanged(object? sender, AccelerometerChangedEventArgs e)
+        {
+            var data = e.Reading;
+            // Obliczamy wektor wypadkowy (Magnitude) przyśpieszenia fizycznego smartfona
+            double magnitude = Math.Sqrt(data.Acceleration.X * data.Acceleration.X +
+                                         data.Acceleration.Y * data.Acceleration.Y +
+                                         data.Acceleration.Z * data.Acceleration.Z);
+
+            // Wartość 1.0G to stan spoczynku (grawitacja). Przeciętny wstrząs w biegu (krok) przekracza 1.3 - 1.5G
+            if (magnitude > 1.4)
+            {
+                if ((DateTime.Now - lastStepTime).TotalMilliseconds > 300) // Cooldown na jeden krok to 300ms by wyeliminować szumy z wibracji
+                {
+                    realSteps++;
+                    lastStepTime = DateTime.Now;
+
+                    // Odtwarzanie do widoku na wątku GUI
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        StepsLabel.Text = realSteps.ToString("N0");
+                    });
+                }
+            }
         }
 
         protected override async void OnAppearing()
@@ -95,7 +122,8 @@ namespace Projekt_c4.Views
                             if (!RunMap.MapElements.Contains(userPositionMarker))
                                 RunMap.MapElements.Add(userPositionMarker);
 
-                            RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.5)));
+                            // Bliższy początkowy zoom na start biegu (0.15 km to 150 metrów wokół Ciebie)
+                            RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.15)));
                         });
                     }
                 }
@@ -103,7 +131,7 @@ namespace Projekt_c4.Views
             catch { /* Ignoruj błędy lokalizacji na symulatorze */ }
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object? sender, EventArgs e)
         {
             if (isRunning)
             {
@@ -150,17 +178,14 @@ namespace Projekt_c4.Views
                                 runRoute.Geopath.Add(location);
                                 totalDistance += distance;
                                 DistanceLabel.Text = totalDistance.ToString("0.00");
-
-                                int steps = (int)(totalDistance * 1300);
-                                StepsLabel.Text = steps.ToString("N0");
                             }
                         }
 
                         // Aktualizujemy "stary punkt" na bieżąco, by śledzić pozycję z kamerą
                         lastLocation = location;
 
-                        // Centruj płynnie mapę na nowej pozycji
-                        RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.3)));
+                        // Płynny zoom kamery! Zmniejszono z 0.3 na 0.15 km (150 metrów) dla dużo bliższego widoku biegacza
+                        RunMap.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(0.15)));
                     });
                 }
             }
@@ -179,13 +204,13 @@ namespace Projekt_c4.Views
             switch (e.StatusType)
             {
                 case GestureStatus.Running:
-                    if (e.TotalY > 0 && isPanelExpanded) // Przesunięcie w dół
+                    if (e.TotalY > 0 && isPanelExpanded) // Dół
                     {
                         BottomPanel.TranslationY = e.TotalY;
                     }
-                    else if (e.TotalY < 0 && !isPanelExpanded) // Przesunięcie w górę
+                    else if (e.TotalY < 0 && !isPanelExpanded) // Góra
                     {
-                        double newY = 400 + e.TotalY; // Ukryty znacznie mocniej u dołu
+                        double newY = 300 + e.TotalY; // StatsContent height to chowamy
                         if (newY >= 0)
                             BottomPanel.TranslationY = newY;
                     }
@@ -194,19 +219,20 @@ namespace Projekt_c4.Views
                 case GestureStatus.Completed:
                     if (BottomPanel.TranslationY > 100 && isPanelExpanded)
                     {
-                        // Całkowite zsunięcie w dół, widoczny pozostaje tylko przycisk "uchwyt"
-                        await BottomPanel.TranslateTo(0, 400, 250, Easing.CubicOut);
+                        // Chowanie paneli ze statystykami - przycisk START zawsze wystaje
+                        await BottomPanel.TranslateTo(0, 300, 250, Easing.CubicOut);
                         isPanelExpanded = false;
+                        StatsContent.IsVisible = false;
                     }
-                    else if (BottomPanel.TranslationY < 300 && !isPanelExpanded)
+                    else if (BottomPanel.TranslationY < 200 && !isPanelExpanded)
                     {
-                        // Powrót statystyk na górę
+                        StatsContent.IsVisible = true;
                         await BottomPanel.TranslateTo(0, 0, 250, Easing.CubicOut);
                         isPanelExpanded = true;
                     }
                     else
                     {
-                        await BottomPanel.TranslateTo(0, isPanelExpanded ? 0 : 400, 150, Easing.Linear);
+                        await BottomPanel.TranslateTo(0, isPanelExpanded ? 0 : 300, 150, Easing.Linear);
                     }
                     break;
             }
@@ -234,37 +260,49 @@ namespace Projekt_c4.Views
 
             if (!isRunning)
             {
-                // Start Biegu
+                // Start Biegu i akcelerometru (kroków fizycznych)
                 isRunning = true;
                 ActionBtn.Text = "STOP";
                 ActionBtn.BackgroundColor = Colors.Red;
                 ActionBtn.TextColor = Colors.White;
 
-                // Zapobieganie wygaszaniu ekranu w kieszeni i usypianiu modułu GPS!
                 Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = true;
+
+                // Uruchomienie śledzenia żyroskopu (akcelerometru)
+                if (Accelerometer.Default.IsSupported && !Accelerometer.Default.IsMonitoring)
+                {
+                    Accelerometer.Default.ReadingChanged += Accelerometer_ReadingChanged;
+                    Accelerometer.Default.Start(SensorSpeed.UI);
+                }
 
                 startTime = DateTime.Now;
                 runRoute.Geopath.Clear();
                 lastLocation = null;
                 totalDistance = 0;
+                realSteps = 0;
                 DistanceLabel.Text = "00.00";
+                StepsLabel.Text = "0";
 
                 timer.Start();
             }
             else
             {
-                // Stop Biegu
+                // Stop Biegu i wyłączenie wstrząsów
                 isRunning = false;
                 ActionBtn.Text = "START";
                 ActionBtn.BackgroundColor = Color.FromArgb("#00E676");
                 ActionBtn.TextColor = Colors.Black;
 
-                // Ekran znowu może się normalnie wygaszać
                 Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = false;
+
+                if (Accelerometer.Default.IsMonitoring)
+                {
+                    Accelerometer.Default.Stop();
+                    Accelerometer.Default.ReadingChanged -= Accelerometer_ReadingChanged;
+                }
 
                 timer.Stop();
 
-                // Zapisz bieg do bazy danych!
                 var newWorkout = new Models.Workout
                 {
                     UserId = ViewModels.MainViewModel.Instance?.CurrentUserId ?? 0,
@@ -276,9 +314,10 @@ namespace Projekt_c4.Views
                     Route = new System.Collections.Generic.List<Microsoft.Maui.Devices.Sensors.Location>(runRoute.Geopath)
                 };
 
-                // Czekamy na zapisanie do SQLite i odświeżamy ViewModel
                 App.Database.SaveWorkoutAsync(newWorkout).ContinueWith(t =>
                 {
+                    _ = App.FirebaseCloud.PushWorkoutAsync(newWorkout);
+
                     if (ViewModels.MainViewModel.Instance != null)
                     {
                         MainThread.BeginInvokeOnMainThread(async () =>

@@ -9,8 +9,8 @@ namespace Projekt_c4.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public static MainViewModel Instance { get; private set; }
-        public ObservableCollection<Workout> Workouts { get; set; }
+        public static MainViewModel Instance { get; private set; } = null!;
+        public ObservableCollection<Workout> Workouts { get; set; } = new ObservableCollection<Workout>();
 
         // Zmienna trzymająca imię aktualnie zalogowanego użytkownika
         private string _currentUserName = "Biegaczu";
@@ -38,7 +38,7 @@ namespace Projekt_c4.ViewModels
             LoadWorkoutsAsync();
         }
 
-        // Zaciąganie z bazy dla konkretnego użytkownika
+        // Zaciąganie z bazy dla konkretnego użytkownika + pobieranie z chmury Firebase
         public async Task LoadWorkoutsAsync()
         {
             if (CurrentUserId == 0)
@@ -47,9 +47,26 @@ namespace Projekt_c4.ViewModels
                 return;
             }
 
+            // --- 1. Zaciągnij lokalnie offline (SQLite) ---
             var dbWorkouts = await App.Database.GetWorkoutsAsync(CurrentUserId);
+
+            // --- 2. Synchronizuj nowości z chmurą (Firebase) ---
+            var cloudWorkouts = await App.FirebaseCloud.PullWorkoutsAsync(CurrentUserId);
+
+            // Prosty mechanizm merge'owania (łączenia): Dodajemy z chmury to, czego nam brakuje
+            foreach (var cloudWorkout in cloudWorkouts)
+            {
+                // Unikaj duplikatów po tytule i dystansie
+                if (!dbWorkouts.Any(w => w.Date.ToString() == cloudWorkout.Date.ToString() && w.DistanceKm == cloudWorkout.DistanceKm))
+                {
+                    await App.Database.SaveWorkoutAsync(cloudWorkout);
+                    dbWorkouts.Add(cloudWorkout);
+                }
+            }
+
+            // Odśwież i wyświetl wszystko!
             Workouts.Clear();
-            foreach (var workout in dbWorkouts)
+            foreach (var workout in dbWorkouts.OrderByDescending(w => w.Date))
             {
                 Workouts.Add(workout);
             }

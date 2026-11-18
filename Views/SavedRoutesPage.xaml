@@ -13,24 +13,32 @@
     <Grid RowDefinitions="Auto, *">
         <Label Grid.Row="0" Text="Zapisane Trasy" FontSize="26" FontAttributes="Bold" TextColor="White" Margin="20,40,20,10"/>
 
-        <!-- Włączona detekcja kliknięć (SelectionMode) -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" SelectionMode="Single" SelectionChanged="OnWorkoutSelected" Margin="20,0,20,0">
+        <!-- Wyleciało zbugowane SelectionMode z CollectionView. Celowanie naprawione przez rzucenie twardego Click-targetu na całą ramkę (Frame)! -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20,0,20,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Margin="0,5,0,10" Padding="20" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                    <Frame Margin="0,5,0,10" Padding="0" CornerRadius="20" BackgroundColor="#1A1D24" HasShadow="True" BorderColor="#2A2D34">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnRouteTapped" CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
 
-                            <HorizontalStackLayout Spacing="10" Margin="0,5,0,0">
-                                <Label Text="Dystans:" TextColor="#888" FontSize="14"/>
-                                <Label Text="{Binding DistanceKm, StringFormat='{0:F2} km'}" TextColor="#00E676" FontAttributes="Bold" FontSize="14"/>
-                                <Label Text="|" TextColor="#555" />
-                                <Label Text="Czas:" TextColor="#888" FontSize="14"/>
-                                <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="#00E676" FontAttributes="Bold" FontSize="14"/>
-                            </HorizontalStackLayout>
+                        <!-- Upiększony wygląd karty biegów, Gradient i ikonki (Deluxe) -->
+                        <Grid ColumnDefinitions="Auto, *, Auto" Padding="20">
+                            <!-- Ikona trasy po lewej -->
+                            <Frame Grid.Column="0" WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent" VerticalOptions="Center">
+                                <Label Text="📍" HorizontalOptions="Center" VerticalOptions="Center" FontSize="22"/>
+                            </Frame>
 
-                            <Label Text="{Binding Date, StringFormat='Data: {0:dd.MM.yyyy HH:mm}'}" TextColor="#888" FontSize="12" Margin="0,5,0,0"/>
-                        </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0">
+                                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                                <Label Text="{Binding Date, StringFormat='{0:dd MMM yyyy, HH:mm}'}" TextColor="#888" FontSize="12" Margin="0,3,0,0"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center">
+                                <Label Text="{Binding DistanceKm, StringFormat='{0:F2} km'}" TextColor="#00E676" FontAttributes="Bold" FontSize="20" HorizontalOptions="End"/>
+                                <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="#888" FontSize="12" HorizontalOptions="End"/>
+                            </VerticalStackLayout>
+                        </Grid>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
