@@ -14,10 +14,14 @@ namespace Projekt_c4.Views
             InitializeComponent();
 
             // Ustawienie statystyk na dolnym panelu
-            TitleLabel.Text = workout.Date.ToString("dd.MM.yyyy HH:mm");
+            TitleLabel.Text = workout.Title;
+            DateLabel.Text = workout.Date.ToString("dd.MM.yyyy HH:mm");
             DistanceLabel.Text = workout.DistanceKm.ToString("0.00");
             DurationLabel.Text = workout.Duration.ToString(@"hh\:mm\:ss");
             PaceLabel.Text = string.IsNullOrEmpty(workout.PaceString) ? "--'--" : workout.PaceString;
+
+            // Obliczenie kroków (tak samo jak liczy to RunningPage)
+            StepsLabel.Text = ((int)(workout.DistanceKm * 1300)).ToString("N0");
 
             // Rysowanie trasy na mapie
             if (workout.Route != null && workout.Route.Any())
@@ -68,7 +72,7 @@ namespace Projekt_c4.Views
         private async void OnBackTapped(object sender, EventArgs e)
         {
             // Powrót do poprzedniego ekranu bez burzenia paska zakładek Shell
-            await Navigation.PopAsync();
+            await Navigation.PopModalAsync();
         }
     }
 }

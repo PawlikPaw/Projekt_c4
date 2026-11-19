@@ -19,13 +19,6 @@
                     </Frame.GestureRecognizers>
                     <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20"/>
                 </Frame>
-                <!-- Przycisk do centrowania mapy wymuszający geolokalizację na emulatorze -->
-                <Frame HorizontalOptions="End" WidthRequest="45" HeightRequest="45" CornerRadius="22" BackgroundColor="#1A1D24" Padding="0" HasShadow="True" BorderColor="Transparent">
-                    <Frame.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCenterMapTapped" />
-                    </Frame.GestureRecognizers>
-                    <Label Text="📍" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20"/>
-                </Frame>
             </Grid>
 
             <!-- ZWIJANY DOLNY PANEL STATYSTYK -->
@@ -41,17 +34,47 @@
                     <!-- Uchwyt (Drag handle) -->
                     <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="#444" HorizontalOptions="Center" Margin="0,0,0,5"/>
 
-                    <!-- Przycisk Start/Stop zawsze widoczny nad statystykami, blisko kciuka! -->
-                    <Button x:Name="ActionBtn"
-                            Text="START"
-                            BackgroundColor="#00E676"
-                            TextColor="Black"
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            CornerRadius="30"
-                            HeightRequest="60"
-                            Margin="0,10,0,5"
-                            Clicked="OnActionClicked" />
+                    <!-- Główny przycisk Start i Panel Akcji widoczny nad statystykami -->
+                    <Grid ColumnDefinitions="*, *, *">
+                        <Button x:Name="ResetBtn"
+                                Grid.Column="0"
+                                Text="RESET"
+                                BackgroundColor="#333333"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                CornerRadius="25"
+                                HeightRequest="50"
+                                Margin="0,15,10,10"
+                                IsVisible="False"
+                                Clicked="OnResetClicked" />
+
+                        <Button x:Name="ActionBtn"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="3"
+                                Text="START"
+                                BackgroundColor="#00E676"
+                                TextColor="Black"
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                CornerRadius="30"
+                                HeightRequest="60"
+                                Margin="0,10,0,5"
+                                Clicked="OnActionClicked" />
+
+                        <Button x:Name="PauseBtn"
+                                Grid.Column="2"
+                                Text="WSTRZYMAJ"
+                                BackgroundColor="#FFA000"
+                                TextColor="Black"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                CornerRadius="25"
+                                HeightRequest="50"
+                                Margin="10,15,0,10"
+                                IsVisible="False"
+                                Clicked="OnPauseClicked" />
+                    </Grid>
 
                     <!-- Ten kontener będzie ukrywany przez animację TranslateTo panelu (suwanie z dołu) -->
                     <VerticalStackLayout x:Name="StatsContent" Spacing="15">
@@ -66,10 +89,10 @@
                             <!-- Czas i Tempo -->
                             <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
                                 <Label x:Name="DurationLabel" Text="00:00" FontSize="40" FontAttributes="Bold" TextColor="White" HorizontalOptions="End" />
-                                <Label Text="Duration" FontSize="14" TextColor="#888" HorizontalOptions="End" Margin="0,-5,0,15"/>
+                                <Label Text="Czas" FontSize="14" TextColor="#888" HorizontalOptions="End" Margin="0,-5,0,15"/>
 
                                 <Label x:Name="PaceLabel" Text="00'00&quot;" FontSize="24" FontAttributes="Bold" TextColor="White" HorizontalOptions="End" />
-                                <Label Text="Avg Pace" FontSize="12" TextColor="#888" HorizontalOptions="End" />
+                                <Label Text="Tempo" FontSize="12" TextColor="#888" HorizontalOptions="End" />
                             </VerticalStackLayout>
                         </Grid>
 
@@ -87,7 +110,14 @@
 
                                 <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
                                     <Label Text="Cel:" FontSize="12" TextColor="#555" HorizontalOptions="End"/>
-                                    <Label Text="10 000" FontSize="14" FontAttributes="Bold" TextColor="#00E676" HorizontalOptions="End"/>
+                                    <HorizontalStackLayout HorizontalOptions="End">
+                                        <Label x:Name="StepGoalLabel" Text="10 000" FontSize="14" FontAttributes="Bold" TextColor="#00E676" VerticalOptions="Center"/>
+                                        <Label Text=" ✏️" FontSize="12" TextColor="#FFB300" VerticalOptions="Center">
+                                            <Label.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnEditStepGoalTapped" />
+                                            </Label.GestureRecognizers>
+                                        </Label>
+                                    </HorizontalStackLayout>
                                 </VerticalStackLayout>
                             </Grid>
                         </Frame>

@@ -6,42 +6,52 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="#16181F">
 
-    <ContentPage.BindingContext>
-        <viewmodels:MainViewModel />
-    </ContentPage.BindingContext>
-
     <Grid RowDefinitions="Auto, *">
         <Label Grid.Row="0" Text="Zapisane Trasy" FontSize="26" FontAttributes="Bold" TextColor="White" Margin="20,40,20,10"/>
 
         <!-- Wyleciało zbugowane SelectionMode z CollectionView. Celowanie naprawione przez rzucenie twardego Click-targetu na całą ramkę (Frame)! -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20,0,20,0">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20,0,20,0" IsVisible="{Binding IsLoggedIn}">
+            <!-- PUSTY STAN TRENINGÓW -->
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,100,0,0">
+                    <Label Text="🏃‍♂️💨" FontSize="60" HorizontalOptions="Center" />
+                    <Label Text="Brak zapisanych tras!" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                    <Label Text="Zrób swój pierwszy krok i zacznij biegać." FontSize="14" TextColor="#888" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="20,0"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Margin="0,5,0,10" Padding="0" CornerRadius="20" BackgroundColor="#1A1D24" HasShadow="True" BorderColor="#2A2D34">
-                        <Frame.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnRouteTapped" CommandParameter="{Binding .}" />
-                        </Frame.GestureRecognizers>
-
-                        <!-- Upiększony wygląd karty biegów, Gradient i ikonki (Deluxe) -->
-                        <Grid ColumnDefinitions="Auto, *, Auto" Padding="20">
-                            <!-- Ikona trasy po lewej -->
-                            <Frame Grid.Column="0" WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent" VerticalOptions="Center">
-                                <Label Text="📍" HorizontalOptions="Center" VerticalOptions="Center" FontSize="22"/>
-                            </Frame>
-
-                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0">
-                                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
-                                <Label Text="{Binding Date, StringFormat='{0:dd MMM yyyy, HH:mm}'}" TextColor="#888" FontSize="12" Margin="0,3,0,0"/>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center">
-                                <Label Text="{Binding DistanceKm, StringFormat='{0:F2} km'}" TextColor="#00E676" FontAttributes="Bold" FontSize="20" HorizontalOptions="End"/>
-                                <Label Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="#888" FontSize="12" HorizontalOptions="End"/>
-                            </VerticalStackLayout>
+                    <Frame Margin="0,5,0,10" Padding="20" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">
+                        <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+                            <Label Grid.Column="0" Text="{Binding Title}" FontSize="18" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="✏️" FontSize="18" VerticalOptions="Center" Margin="0,0,15,0" TextColor="#FFB300">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnEditTapped" CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Column="2" Text="❌" FontSize="18" VerticalOptions="Center" Margin="0,0,15,0" TextColor="#FF5252">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnDeleteTapped" CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Column="3" Text="➔" TextColor="#00E676" FontSize="24" FontAttributes="Bold" VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnRouteTapped" CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
                         </Grid>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <!-- WIDOK DLA NIEZALOGOWANYCH -->
+        <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,0,0,100" IsVisible="{Binding IsNotLoggedIn}">
+            <Label Text="🔒" FontSize="60" HorizontalOptions="Center" />
+            <Label Text="Musisz się zalogować" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+            <Label Text="Zaloguj się, aby zapisywać i przeglądać swoje biegi." FontSize="14" TextColor="#888" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="20,0"/>
+            <Button Text="PRZEJDŹ DO LOGOWANIA" CornerRadius="25" HeightRequest="50" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="14" Clicked="OnGoToLoginClicked" Margin="0,15,0,0" WidthRequest="250"/>
+        </VerticalStackLayout>
     </Grid>
 </ContentPage>

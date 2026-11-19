@@ -45,5 +45,9 @@ namespace Projekt_c4.Data
         {
             return _database.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
         }
+        public Task<int> DeleteWorkoutAsync(Workout workout)
+        {
+            return _database.DeleteAsync(workout);
+        }
     }
 }

@@ -9,7 +9,17 @@ namespace Projekt_c4.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public static MainViewModel Instance { get; private set; } = null!;
+        private static MainViewModel? _instance;
+        public static MainViewModel Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new MainViewModel();
+                return _instance;
+            }
+        }
+
         public ObservableCollection<Workout> Workouts { get; set; } = new ObservableCollection<Workout>();
 
         // Zmienna trzymająca imię aktualnie zalogowanego użytkownika
@@ -24,23 +34,41 @@ namespace Projekt_c4.ViewModels
             }
         }
 
-        public int CurrentUserId { get; set; }
+        private int _currentUserId;
+        public int CurrentUserId
+        {
+            get => _currentUserId;
+            set
+            {
+                _currentUserId = value;
+                IsLoggedIn = _currentUserId > 0;
+            }
+        }
+
+        private bool _isLoggedIn;
+        public bool IsLoggedIn
+        {
+            get => _isLoggedIn;
+            set
+            {
+                _isLoggedIn = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsNotLoggedIn));
+            }
+        }
+
+        public bool IsNotLoggedIn => !IsLoggedIn;
 
         public MainViewModel()
         {
-            Instance = this;
             Workouts = new ObservableCollection<Workout>();
 
             // Wczytywanie zapisanej sesji (Persist)
             CurrentUserId = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserId", 0);
             _currentUserName = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserName", "Biegaczu");
 
-            // KOD TESTOWY (DEV): Wymuszenie zalogowania na sztywno, żeby nie tracić czasu!
-            if (CurrentUserId == 0)
-            {
-                CurrentUserId = 999;
-                CurrentUserName = "Janusz (Test)";
-            }
+            // Ustaw flagę logowania
+            IsLoggedIn = CurrentUserId > 0;
 
             LoadWorkoutsAsync();
         }
@@ -77,6 +105,19 @@ namespace Projekt_c4.ViewModels
             {
                 Workouts.Add(workout);
             }
+        }
+
+        public async Task DeleteWorkoutAsync(Workout workout)
+        {
+            if (workout == null) return;
+
+            // Usuń z lokalnej bazy
+            await App.Database.DeleteWorkoutAsync(workout);
+
+            // Usuń z widoku
+            Workouts.Remove(workout);
+
+            // W przyszłości można dodać: await App.FirebaseCloud.DeleteWorkoutAsync(workout.Id);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

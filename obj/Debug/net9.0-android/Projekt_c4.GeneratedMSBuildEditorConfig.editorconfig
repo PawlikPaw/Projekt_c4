@@ -1,0 +1,76 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = true
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net9.0-android
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v9.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EntryPointFilePath = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Projekt_c4
+build_property.ProjectDir = /Users/michaltokarz/StudioProjects/Projekt_c43/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/App.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.App.xaml
+build_metadata.AdditionalFiles.TargetPath = App.xaml
+build_metadata.AdditionalFiles.RelativePath = App.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/AppShell.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.AppShell.xaml
+build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
+build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Resources/Styles/Colors.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Resources.Styles.Colors.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/Colors.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/Colors.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Resources/Styles/Styles.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Resources.Styles.Styles.xaml
+build_metadata.AdditionalFiles.TargetPath = Resources/Styles/Styles.xaml
+build_metadata.AdditionalFiles.RelativePath = Resources/Styles/Styles.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Views/MainPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.MainPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/MainPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/MainPage.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Views/RouteDetailsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.RouteDetailsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/RouteDetailsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/RouteDetailsPage.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Views/RunningPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.RunningPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/RunningPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/RunningPage.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Views/SavedRoutesPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.SavedRoutesPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/SavedRoutesPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/SavedRoutesPage.xaml
+
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Views/WorkoutDetailsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.WorkoutDetailsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/WorkoutDetailsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/WorkoutDetailsPage.xaml

@@ -10,7 +10,10 @@ namespace Projekt_c4.Views
     public partial class RunningPage : ContentPage
     {
         private bool isRunning = false;
+        private bool isPaused = false;
         private DateTime startTime;
+        private TimeSpan totalPausedTime = TimeSpan.Zero;
+        private DateTime lastPauseTime;
         private IDispatcherTimer timer = null!;
         private Polyline runRoute = null!;
         private Location? lastLocation;
@@ -22,10 +25,17 @@ namespace Projekt_c4.Views
         // Przechowywanie danych o krokach fizycznych
         private int realSteps = 0;
         private DateTime lastStepTime = DateTime.MinValue;
+        private bool goalReachedNotified = false;
+
+        private int stepGoal = 10000;
 
         public RunningPage()
         {
             InitializeComponent();
+
+            // Ładowanie zapisanego celu kroków
+            stepGoal = Microsoft.Maui.Storage.Preferences.Default.Get("DailyStepGoal", 10000);
+            StepGoalLabel.Text = stepGoal.ToString("N0");
 
             runRoute = new Polyline
             {
@@ -65,9 +75,34 @@ namespace Projekt_c4.Views
                     lastStepTime = DateTime.Now;
 
                     // Odtwarzanie do widoku na wątku GUI
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    MainThread.BeginInvokeOnMainThread(async () =>
                     {
                         StepsLabel.Text = realSteps.ToString("N0");
+
+                        // Sprawdzamy czy osiągnęliśmy cel kroków
+                        if (realSteps >= stepGoal && !goalReachedNotified)
+                        {
+                            goalReachedNotified = true;
+
+                            // Odtwarzanie fanfar, wywołanie w oknie Alertu
+                            await DisplayAlert("Gratulacje! 🎉", $"Udało Ci się osiągnąć zaplanowany cel: {stepGoal} kroków. Cel zostanie teraz zwiększony, abyś mógł bić kolejne rekordy!", "Super!");
+
+                            // Obliczanie nowego celu. Zaokrągla do pełnych tysięcy dla estetyki lub zwiększa równo.
+                            int nextGoal = stepGoal;
+                            if (nextGoal <= 500)
+                                nextGoal += 500;
+                            else if (nextGoal < 5000)
+                                nextGoal += 1000;
+                            else
+                                nextGoal += 5000;
+
+                            stepGoal = nextGoal;
+                            StepGoalLabel.Text = stepGoal.ToString("N0");
+                            Microsoft.Maui.Storage.Preferences.Default.Set("DailyStepGoal", stepGoal);
+
+                            // Resetujemy by łapać ewentualny przekroczony nowy limit na tym samym biegu
+                            goalReachedNotified = false;
+                        }
                     });
                 }
             }
@@ -133,10 +168,10 @@ namespace Projekt_c4.Views
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            if (isRunning)
+            if (isRunning && !isPaused)
             {
-                // Aktualizujemy etykietę czasu tylko gdy trwa bieg
-                var duration = DateTime.Now - startTime;
+                // Aktualizujemy etykietę czasu tylko gdy trwa bieg (odejmując czas wstrzymania)
+                var duration = DateTime.Now - startTime - totalPausedTime;
                 DurationLabel.Text = duration.ToString(@"mm\:ss");
             }
 
@@ -148,7 +183,7 @@ namespace Projekt_c4.Views
 
         private async void UpdateLocation()
         {
-            if (isCheckingLocation)
+            if (isCheckingLocation || isPaused)
                 return;
 
             isCheckingLocation = true;
@@ -196,6 +231,25 @@ namespace Projekt_c4.Views
             }
         }
 
+        private async void OnEditStepGoalTapped(object sender, EventArgs e)
+        {
+            string newGoalStr = await DisplayPromptAsync("Cel Kroków", "Wpisz nowy dzienny cel kroków:", "Zapisz", "Anuluj", null, -1, Keyboard.Numeric, stepGoal.ToString());
+
+            if (!string.IsNullOrWhiteSpace(newGoalStr) && int.TryParse(newGoalStr, out int newGoal))
+            {
+                if (newGoal > 0)
+                {
+                    stepGoal = newGoal;
+                    StepGoalLabel.Text = stepGoal.ToString("N0");
+                    Microsoft.Maui.Storage.Preferences.Default.Set("DailyStepGoal", stepGoal);
+                }
+                else
+                {
+                    await DisplayAlert("Błąd", "Cel kroków musi być większy niż zero.", "OK");
+                }
+            }
+        }
+
         private bool isPanelExpanded = true;
 
         // --- ZWIJANIE I ROZWIJANIE PANELU STATYSTYK (PAN/PRZESUWANIE) ---
@@ -219,12 +273,11 @@ namespace Projekt_c4.Views
                 case GestureStatus.Completed:
                     if (BottomPanel.TranslationY > 100 && isPanelExpanded)
                     {
-                        // Zsuwamy w dół na 300px
-                        await BottomPanel.TranslateTo(0, 300, 250, Easing.CubicOut);
+                        // Zsuwamy w dół tylko do poziomu przycisku akcji i uchwytu
+                        await BottomPanel.TranslateTo(0, 260, 250, Easing.CubicOut);
                         isPanelExpanded = false;
 
                         // ZABEZPIECZENIE: NIE ukrywamy całego kontenera ActionBtn! START ma zostać.
-                        // Ale nie możemy użyć IsVisible na Gridzie, bo zaburza autolayout
                         StatsContent.Opacity = 0; // Znikanie zamiast ucinania!
                     }
                     else if (BottomPanel.TranslationY < 200 && !isPanelExpanded)
@@ -236,7 +289,7 @@ namespace Projekt_c4.Views
                     }
                     else
                     {
-                        await BottomPanel.TranslateTo(0, isPanelExpanded ? 0 : 300, 150, Easing.Linear);
+                        await BottomPanel.TranslateTo(0, isPanelExpanded ? 0 : 260, 150, Easing.Linear);
                     }
                     break;
             }
@@ -246,12 +299,6 @@ namespace Projekt_c4.Views
         {
             // Przeniesienie do zakładki "Profil" przy użyciu zdefiniowanego Route
             await Shell.Current.GoToAsync("//ProfileTab");
-        }
-
-        private async void OnCenterMapTapped(object sender, EventArgs e)
-        {
-            // Opcja ręcznego wymuszania centrowania mapy na naszej lokalizacji
-            await RequestLocationPermission();
         }
 
         private void OnActionClicked(object sender, EventArgs e)
@@ -266,9 +313,18 @@ namespace Projekt_c4.Views
             {
                 // Start Biegu i akcelerometru (kroków fizycznych)
                 isRunning = true;
+                isPaused = false;
+                totalPausedTime = TimeSpan.Zero;
+
                 ActionBtn.Text = "STOP";
                 ActionBtn.BackgroundColor = Colors.Red;
                 ActionBtn.TextColor = Colors.White;
+
+                // Animacja UI: ukryj wielki przycisk i pokaż mniejsze opcje akcji na brzegach
+                Grid.SetColumn(ActionBtn, 1);
+                Grid.SetColumnSpan(ActionBtn, 1);
+                ResetBtn.IsVisible = true;
+                PauseBtn.IsVisible = true;
 
                 Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = true;
 
@@ -291,46 +347,112 @@ namespace Projekt_c4.Views
             }
             else
             {
-                // Stop Biegu i wyłączenie wstrząsów
-                isRunning = false;
-                ActionBtn.Text = "START";
-                ActionBtn.BackgroundColor = Color.FromArgb("#00E676");
-                ActionBtn.TextColor = Colors.Black;
+                // Stop Biegu, Zapisanie i powrót do normalnego stanu UI
+                StopAndSaveWorkout();
+            }
+        }
 
-                Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = false;
+        private void OnPauseClicked(object sender, EventArgs e)
+        {
+            if (!isRunning) return;
+
+            if (isPaused)
+            {
+                // WZNÓW
+                isPaused = false;
+                totalPausedTime += DateTime.Now - lastPauseTime;
+                PauseBtn.Text = "WSTRZYMAJ";
+                PauseBtn.BackgroundColor = Color.FromArgb("#FFA000");
+
+                if (Accelerometer.Default.IsSupported && !Accelerometer.Default.IsMonitoring)
+                {
+                    Accelerometer.Default.Start(SensorSpeed.UI);
+                }
+            }
+            else
+            {
+                // WSTRZYMAJ
+                isPaused = true;
+                lastPauseTime = DateTime.Now;
+                PauseBtn.Text = "WZNÓW";
+                PauseBtn.BackgroundColor = Color.FromArgb("#00E676");
 
                 if (Accelerometer.Default.IsMonitoring)
                 {
                     Accelerometer.Default.Stop();
-                    Accelerometer.Default.ReadingChanged -= Accelerometer_ReadingChanged;
                 }
-
-                timer.Stop();
-
-                var newWorkout = new Models.Workout
-                {
-                    UserId = ViewModels.MainViewModel.Instance?.CurrentUserId ?? 999, // Zabezpieczenie testowe
-                    Title = "Bieg (Outdoor)",
-                    Date = DateTime.Now,
-                    DistanceKm = totalDistance,
-                    Duration = DateTime.Now - startTime,
-                    PaceString = PaceLabel.Text,
-                    Route = new System.Collections.Generic.List<Microsoft.Maui.Devices.Sensors.Location>(runRoute.Geopath)
-                };
-
-                App.Database.SaveWorkoutAsync(newWorkout).ContinueWith(t =>
-                {
-                    _ = App.FirebaseCloud.PushWorkoutAsync(newWorkout);
-
-                    if (ViewModels.MainViewModel.Instance != null)
-                    {
-                        MainThread.BeginInvokeOnMainThread(async () =>
-                        {
-                            await ViewModels.MainViewModel.Instance.LoadWorkoutsAsync();
-                        });
-                    }
-                });
             }
+        }
+
+        private async void OnResetClicked(object sender, EventArgs e)
+        {
+            bool answer = await DisplayAlert("Reset", "Czy na pewno chcesz skasować ten bieg bez zapisywania?", "Tak", "Nie");
+            if (answer)
+            {
+                ResetUI();
+            }
+        }
+
+        private void StopAndSaveWorkout()
+        {
+            var newWorkout = new Models.Workout
+            {
+                UserId = ViewModels.MainViewModel.Instance?.CurrentUserId ?? 999,
+                Title = "Bieg (Outdoor)",
+                Date = DateTime.Now,
+                DistanceKm = totalDistance,
+                Duration = DateTime.Now - startTime - totalPausedTime,
+                PaceString = PaceLabel.Text,
+                Route = new System.Collections.Generic.List<Microsoft.Maui.Devices.Sensors.Location>(runRoute.Geopath)
+            };
+
+            ResetUI();
+
+            App.Database.SaveWorkoutAsync(newWorkout).ContinueWith(t =>
+            {
+                _ = App.FirebaseCloud.PushWorkoutAsync(newWorkout);
+
+                if (ViewModels.MainViewModel.Instance != null)
+                {
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        await ViewModels.MainViewModel.Instance.LoadWorkoutsAsync();
+                    });
+                }
+            });
+        }
+
+        private void ResetUI()
+        {
+            isRunning = false;
+            isPaused = false;
+
+            Grid.SetColumn(ActionBtn, 0);
+            Grid.SetColumnSpan(ActionBtn, 3);
+            ActionBtn.Text = "START";
+            ActionBtn.BackgroundColor = Color.FromArgb("#00E676");
+            ActionBtn.TextColor = Colors.Black;
+
+            ResetBtn.IsVisible = false;
+            PauseBtn.IsVisible = false;
+            PauseBtn.Text = "WSTRZYMAJ";
+            PauseBtn.BackgroundColor = Color.FromArgb("#FFA000");
+
+            Microsoft.Maui.Devices.DeviceDisplay.Current.KeepScreenOn = false;
+
+            if (Accelerometer.Default.IsMonitoring)
+            {
+                Accelerometer.Default.Stop();
+                Accelerometer.Default.ReadingChanged -= Accelerometer_ReadingChanged;
+            }
+
+            timer.Stop();
+            runRoute.Geopath.Clear();
+            DistanceLabel.Text = "00.00";
+            StepsLabel.Text = "0";
+            DurationLabel.Text = "00:00";
+            totalDistance = 0;
+            realSteps = 0;
         }
     }
 }

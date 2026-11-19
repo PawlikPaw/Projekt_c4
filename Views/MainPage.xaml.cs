@@ -10,6 +10,7 @@ namespace Projekt_c4.Views
         public MainPage()
         {
             InitializeComponent();
+            BindingContext = ViewModels.MainViewModel.Instance;
             CheckLoginState();
         }
 
@@ -21,6 +22,22 @@ namespace Projekt_c4.Views
             {
                 LoginView.IsVisible = false;
                 ProfileView.IsVisible = true;
+            }
+        }
+
+        private void OnEntryFocused(object sender, FocusEventArgs e)
+        {
+            if (sender is Entry entry && entry.Parent is Border border)
+            {
+                border.Stroke = Color.FromArgb("#00E676");
+            }
+        }
+
+        private void OnEntryUnfocused(object sender, FocusEventArgs e)
+        {
+            if (sender is Entry entry && entry.Parent is Border border)
+            {
+                border.Stroke = Colors.Transparent;
             }
         }
 
