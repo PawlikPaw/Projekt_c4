@@ -16,14 +16,25 @@ namespace Projekt_c4.Views
             CheckLoginState();
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            // Sprawdzenie stanu logowania za każdym razem gdy wchodzimy na stronę (wymusza wylogowanie z poziomu ustawień)
+            CheckLoginState();
+        }
+
         private void CheckLoginState()
         {
-            // Jeżeli jesteśmy już zalogowani (sesja przetrwała restart), pokazuj od razu profil
             int savedUserId = Microsoft.Maui.Storage.Preferences.Default.Get("CurrentUserId", 0);
             if (savedUserId != 0)
             {
                 LoginView.IsVisible = false;
                 ProfileView.IsVisible = true;
+            }
+            else
+            {
+                LoginView.IsVisible = true;
+                ProfileView.IsVisible = false;
             }
         }
 
@@ -55,7 +66,31 @@ namespace Projekt_c4.Views
                 return;
             }
 
-            var user = await App.Database.GetUserAsync(email, password);
+            // Próba zalogowania i znalezienia gościa przez internet z chmury
+            var cloudUser = await App.FirebaseCloud.LoginUserAsync(email, password);
+            User? user = cloudUser;
+
+            if (user != null)
+            {
+                // Konto istnieje w chmurze! Sprawdzamy czy mamy je już u nas, jeśli to np. świeży telefon
+                var localCheck = await App.Database.GetUserByIdAsync(user.Id);
+                if (localCheck == null)
+                    await App.Database.SaveUserAsync(user);
+                else
+                {
+                    // Uaktualniamy lokalne dane (np. ktoś zmienił awatar na innym urządzeniu)
+                    localCheck.FirstName = user.FirstName;
+                    localCheck.LastName = user.LastName;
+                    localCheck.ProfileImagePath = user.ProfileImagePath;
+                    await App.Database.SaveUserAsync(localCheck);
+                }
+            }
+            else
+            {
+                // Jak nie ma neta albo usterka - polegamy w 100% na starym dobrym, zapisanym offline SQLite!
+                user = await App.Database.GetUserAsync(email, password);
+            }
+
             if (user != null)
             {
                 if (ViewModels.MainViewModel.Instance != null)
@@ -189,8 +224,9 @@ namespace Projekt_c4.Views
                 return;
             }
 
-            var existingUser = await App.Database.GetUserByEmailAsync(email);
-            if (existingUser != null)
+            var existingCloudUser = await App.FirebaseCloud.GetUserByEmailAsync(email);
+            var existingLocalUser = await App.Database.GetUserByEmailAsync(email);
+            if (existingLocalUser != null || existingCloudUser != null)
             {
                 RegisterErrorLabel.Text = "Konto z tym adresem już istnieje!";
                 RegisterErrorLabel.IsVisible = true;
@@ -206,7 +242,18 @@ namespace Projekt_c4.Views
                     UseBiometrics = UseBiometricsCheckbox.IsChecked
                 };
 
-                await App.Database.SaveUserAsync(newUser);
+                // Najpierw rejestracja w chmurze
+                var registeredCloudUser = await App.FirebaseCloud.RegisterUserAsync(newUser);
+                if (registeredCloudUser != null)
+                {
+                    // Sukces z chmurą, nadpisujemy model nowym ID z chmury i zapisujemy lokalnie
+                    await App.Database.SaveUserAsync(registeredCloudUser);
+                }
+                else
+                {
+                    // Brak internetu, standardowo w SQLite (będzie miało lokalne ID)
+                    await App.Database.SaveUserAsync(newUser);
+                }
 
                 // Jeżeli użytkownik zaznaczył chęć logowania palcem
                 if (newUser.UseBiometrics)

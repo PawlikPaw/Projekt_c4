@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Projekt_c4.ViewModels"
+             x:Class="Projekt_c4.Views.SearchPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#16181F">
+
+    <ContentPage.BindingContext>
+        <viewmodels:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *">
+        <Label Grid.Row="0" Text="Szukaj użytkowników" FontSize="26" FontAttributes="Bold" TextColor="White" Margin="20,40,20,10"/>
+
+        <!-- WIDOK WYSZUKIWANIA DLA ZALOGOWANYCH -->
+        <Grid Grid.Row="1" RowDefinitions="Auto, *" IsVisible="{Binding IsLoggedIn}">
+            <Border Grid.Row="0" Margin="20,10,20,20" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="5,0" StrokeThickness="0">
+                <SearchBar x:Name="UserSearchBar" Placeholder="Wpisz imię, nazwisko lub e-mail..." TextColor="White" PlaceholderColor="#888" BackgroundColor="Transparent" TextChanged="OnSearchBarTextChanged" SearchButtonPressed="OnSearchButtonPressed" />
+            </Border>
+
+            <CollectionView Grid.Row="1" x:Name="UsersCollectionView" Margin="20,0,20,0">
+                <!-- PUSTY STAN WYSZUKIWANIA -->
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,50,0,0">
+                        <Label Text="🔍" FontSize="60" HorizontalOptions="Center" />
+                        <Label Text="Brak wyników!" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                        <Label Text="Spróbuj wpisać inne dane użytkownika." FontSize="14" TextColor="#888" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="20,0"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,5,0,10" Padding="15" CornerRadius="15" BackgroundColor="#1A1D24" BorderColor="Transparent">
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+                                <!-- Zdjęcie profilowe lub emotka -->
+                                <Frame Grid.Column="0" WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent" VerticalOptions="Center">
+                                    <Grid>
+                                        <Label Text="👤" IsVisible="{Binding HasNoProfileImage}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="24"/>
+                                        <Image Source="{Binding ProfileImagePath}" IsVisible="{Binding HasProfileImage}" Aspect="AspectFill" />
+                                    </Grid>
+                                </Frame>
+
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0">
+                                    <Label Text="{Binding FullName}" FontSize="16" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="{Binding Email}" TextColor="#888" FontSize="12" Margin="0,3,0,0"/>
+                                </VerticalStackLayout>
+
+                                <Label Grid.Column="2" Text="➔" TextColor="#00E676" FontSize="24" FontAttributes="Bold" VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnUserTapped" CommandParameter="{Binding .}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- WIDOK DLA NIEZALOGOWANYCH -->
+        <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,0,0,100" IsVisible="{Binding IsNotLoggedIn}">
+            <Label Text="🔒" FontSize="60" HorizontalOptions="Center" />
+            <Label Text="Musisz się zalogować" FontSize="22" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+            <Label Text="Zaloguj się, aby wyszukiwać innych biegaczy." FontSize="14" TextColor="#888" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="20,0"/>
+            <Button Text="PRZEJDŹ DO LOGOWANIA" CornerRadius="25" HeightRequest="50" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="14" Clicked="OnGoToLoginClicked" Margin="0,15,0,0" WidthRequest="250"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

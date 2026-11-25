@@ -36,12 +36,29 @@ namespace Projekt_c4.Views
                         ProfileImage.Source = _currentUser.ProfileImagePath;
                         ProfileImage.IsVisible = true;
                         ProfileEmoji.IsVisible = false;
+                        ProfileDarkOverlay.IsVisible = true;
                     }
                 }
             }
 
             int stepGoal = Microsoft.Maui.Storage.Preferences.Default.Get("DailyStepGoal", 10000);
+            StepGoalDisplay.Text = stepGoal.ToString("N0");
             StepGoalEntry.Text = stepGoal.ToString();
+        }
+
+        private void OnOpenStepGoalOverlayTapped(object sender, EventArgs e)
+        {
+            StepGoalOverlay.IsVisible = true;
+            StepGoalEntry.Focus(); // Automatycznie wysuwa klawiaturę
+        }
+
+        private void OnCloseStepGoalOverlayTapped(object sender, EventArgs e)
+        {
+            StepGoalOverlay.IsVisible = false;
+            if (int.TryParse(StepGoalEntry.Text, out int newGoal) && newGoal > 0)
+            {
+                StepGoalDisplay.Text = newGoal.ToString("N0");
+            }
         }
 
         private async void OnChangeProfilePictureTapped(object sender, EventArgs e)
@@ -68,6 +85,7 @@ namespace Projekt_c4.Views
                     ProfileImage.Source = result.FullPath;
                     ProfileImage.IsVisible = true;
                     ProfileEmoji.IsVisible = false;
+                    ProfileDarkOverlay.IsVisible = true;
                 }
             }
             catch (Exception)
@@ -122,6 +140,10 @@ namespace Projekt_c4.Views
             }
 
             await App.Database.SaveUserAsync(_currentUser);
+
+            // Wysyłamy zmianę danych do Chmury (Firebase)
+            _ = App.FirebaseCloud.UpdateUserAsync(_currentUser);
+
             MainViewModel.Instance.CurrentUserName = _currentUser.FirstName;
             Microsoft.Maui.Storage.Preferences.Default.Set("CurrentUserName", _currentUser.FirstName);
 
@@ -132,6 +154,59 @@ namespace Projekt_c4.Views
             }
 
             await DisplayAlert("Sukces", "Twoje ustawienia zostały zaktualizowane.", "OK");
+            await Navigation.PopModalAsync();
+        }
+
+        private void OnDeleteAccountTapped(object sender, EventArgs e)
+        {
+            DeleteAccountOverlay.IsVisible = true;
+            ConfirmDeleteCheckbox.IsChecked = false;
+            DeletePasswordEntry.Text = string.Empty;
+        }
+
+        private void OnCancelDeleteTapped(object sender, EventArgs e)
+        {
+            DeleteAccountOverlay.IsVisible = false;
+        }
+
+        private async void OnConfirmDeleteTapped(object sender, EventArgs e)
+        {
+            if (!ConfirmDeleteCheckbox.IsChecked)
+            {
+                await DisplayAlert("Uwaga", "Musisz potwierdzić, że rozumiesz konsekwencje zaznaczając pole wyboru.", "OK");
+                return;
+            }
+
+            if (DeletePasswordEntry.Text != _currentUser.PasswordHash)
+            {
+                await DisplayAlert("Błąd", "Nieprawidłowe hasło. Odmowa dostępu.", "OK");
+                return;
+            }
+
+            // Usunięcie z bazy lokalnej
+            await App.Database.DeleteWorkoutsByUserIdAsync(_currentUser.Id);
+            await App.Database.DeleteUserAsync(_currentUser);
+
+            // Usunięcie z bazy Firebase (w tle, bez blokowania GUI)
+            _ = App.FirebaseCloud.DeleteUserWorkoutsAsync(_currentUser.Id);
+            _ = App.FirebaseCloud.DeleteUserAsync(_currentUser.Id);
+
+            // Całkowite czyszczenie sesji i pamięci telefonu
+            Microsoft.Maui.Storage.Preferences.Default.Remove("CurrentUserId");
+            Microsoft.Maui.Storage.Preferences.Default.Remove("CurrentUserName");
+            Microsoft.Maui.Storage.Preferences.Default.Remove("BiometricUserEmail");
+            Microsoft.Maui.Storage.Preferences.Default.Remove("BiometricUserPassword");
+
+            MainViewModel.Instance.CurrentUserName = "Biegaczu";
+            MainViewModel.Instance.CurrentUserId = 0;
+            MainViewModel.Instance.Workouts.Clear();
+            MainViewModel.Instance.TotalSteps = 0;
+
+            await DisplayAlert("Konto usunięte", "Twoje konto oraz wszystkie zapisane trasy zostały bezpowrotnie usunięte.", "OK");
+
+            DeleteAccountOverlay.IsVisible = false;
+
+            // Cofnij do profilu, z którego (dzięki wylogowaniu sesji) natychmiast wyskoczy ekran logowania
             await Navigation.PopModalAsync();
         }
     }

@@ -137,10 +137,11 @@
     "/Users/michaltokarz/.nuget/packages/xamarin.kotlinx.coroutines.core.jvm/1.8.1.3/xamarin.kotlinx.coroutines.core.jvm.1.8.1.3.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.kotlinx.serialization.core/1.7.1.3/xamarin.kotlinx.serialization.core.1.7.1.3.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.kotlinx.serialization.core.jvm/1.7.1.3/xamarin.kotlinx.serialization.core.jvm.1.7.1.3.nupkg.sha512",
+    "/Users/michaltokarz/.nuget/packages/microsoft.netcore.app.ref/9.0.22/microsoft.netcore.app.ref.9.0.22.nupkg.sha512",
+    "/Users/michaltokarz/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.22/microsoft.aspnetcore.app.ref.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.android.ref.35/35.0.105/microsoft.android.ref.35.35.0.105.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.android.runtime.35.android-arm64/35.0.105/microsoft.android.runtime.35.android-arm64.35.0.105.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.android.runtime.35.android-x64/35.0.105/microsoft.android.runtime.35.android-x64.35.0.105.nupkg.sha512",
-    "/Users/michaltokarz/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.22/microsoft.aspnetcore.app.ref.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.netcore.app.ref/9.0.22/microsoft.netcore.app.ref.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.22/microsoft.aspnetcore.app.ref.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.ios.ref.net9.0_26.5/26.5.9004/microsoft.ios.ref.net9.0_26.5.26.5.9004.nupkg.sha512",
@@ -148,8 +149,7 @@
     "/Users/michaltokarz/.nuget/packages/microsoft.netcore.app.ref/9.0.22/microsoft.netcore.app.ref.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.22/microsoft.aspnetcore.app.ref.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.maccatalyst.ref.net9.0_26.5/26.5.9004/microsoft.maccatalyst.ref.net9.0_26.5.26.5.9004.nupkg.sha512",
-    "/Users/michaltokarz/.nuget/packages/microsoft.maccatalyst.runtime.maccatalyst-arm64.net9.0_26.5/26.5.9004/microsoft.maccatalyst.runtime.maccatalyst-arm64.net9.0_26.5.26.5.9004.nupkg.sha512",
-    "/Users/michaltokarz/.nuget/packages/microsoft.netcore.app.ref/9.0.22/microsoft.netcore.app.ref.9.0.22.nupkg.sha512"
+    "/Users/michaltokarz/.nuget/packages/microsoft.maccatalyst.runtime.maccatalyst-arm64.net9.0_26.5/26.5.9004/microsoft.maccatalyst.runtime.maccatalyst-arm64.net9.0_26.5.26.5.9004.nupkg.sha512"
   ],
   "logs": []
 }

@@ -16,12 +16,17 @@
             <ShellContent ContentTemplate="{DataTemplate views:RunningPage}" />
         </Tab>
 
-        <!-- NOWA ZAKŁADKA: TRASY -->
+        <!-- ZAKŁADKA 2: TRASY -->
         <Tab x:Name="RoutesTab" Route="RoutesTab" Title="Trasy" Icon="routesinactive.png">
             <ShellContent ContentTemplate="{DataTemplate views:SavedRoutesPage}" />
         </Tab>
 
-        <!-- ZAKŁADKA 3: PROFIL / HISTORIA (DAWNY MAINPAGE) -->
+        <!-- ZAKŁADKA 3: WYSZUKIWANIE BIEGACZY -->
+        <Tab x:Name="SearchTab" Route="SearchTab" Title="Szukaj" Icon="searchinactive.png">
+            <ShellContent ContentTemplate="{DataTemplate views:SearchPage}" />
+        </Tab>
+
+        <!-- ZAKŁADKA 4: PROFIL / HISTORIA (DAWNY MAINPAGE) -->
         <Tab x:Name="ProfileTab" Route="ProfileTab" Title="Profil" Icon="profileinactive.png">
             <ShellContent ContentTemplate="{DataTemplate views:MainPage}" />
         </Tab>

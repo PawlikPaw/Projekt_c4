@@ -18,5 +18,12 @@ namespace Projekt_c4.Models
         public bool UseBiometrics { get; set; } = false;
 
         public string ProfileImagePath { get; set; } = string.Empty;
+
+        [Ignore]
+        public string FullName => $"{FirstName} {LastName}".Trim();
+        [Ignore]
+        public bool HasProfileImage => !string.IsNullOrEmpty(ProfileImagePath);
+        [Ignore]
+        public bool HasNoProfileImage => string.IsNullOrEmpty(ProfileImagePath);
     }
 }

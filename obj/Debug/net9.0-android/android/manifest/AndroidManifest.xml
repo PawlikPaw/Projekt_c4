@@ -29,7 +29,7 @@
     <!-- TUTAJ MUSISZ WKLEIĆ SWÓJ KLUCZ GOOGLE MAPS API ABY WIDZIEĆ ULICE -->
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAaUOsTLWEoZ0oYF4WP4VOX4ifFZ7RiMm4" />
     <uses-library android:name="org.apache.http.legacy" android:required="false" />
-    <activity android:name="crc64843dd1bb685f84d5.MainActivity" android:configChanges="density|orientation|smallestScreenSize|screenLayout|screenSize|uiMode" android:exported="true" android:launchMode="singleTop" android:theme="@style/Maui.SplashTheme">
+    <activity android:name="crc64843dd1bb685f84d5.MainActivity" android:configChanges="density|orientation|smallestScreenSize|screenLayout|screenSize|uiMode" android:exported="true" android:launchMode="singleTop" android:theme="@style/Maui.SplashTheme" android:windowSoftInputMode="stateUnspecified|adjustResize">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />

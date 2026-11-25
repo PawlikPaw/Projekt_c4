@@ -14,6 +14,7 @@ public partial class AppShell : Shell
         // Reset wszystkich ikon na nieaktywne
         RunningTab.Icon = "runinactive.png";
         RoutesTab.Icon = "routesinactive.png";
+        SearchTab.Icon = "searchinactive.png";
         ProfileTab.Icon = "profileinactive.png";
 
         // Ustalanie aktywnej zakładki na podstawie aktualnej ścieżki
@@ -26,6 +27,10 @@ public partial class AppShell : Shell
         else if (currentRoute.Contains("RoutesTab"))
         {
             RoutesTab.Icon = "routesactive.png";
+        }
+        else if (currentRoute.Contains("SearchTab"))
+        {
+            SearchTab.Icon = "searchactive.png";
         }
         else if (currentRoute.Contains("ProfileTab") || currentRoute.Contains("MainPage"))
         {

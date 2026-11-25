@@ -53,9 +53,25 @@ namespace Projekt_c4.Data
         {
             return _database.Table<User>().Where(u => u.Id == id).FirstOrDefaultAsync();
         }
+
+        public Task<List<User>> GetAllUsersAsync()
+        {
+            return _database.Table<User>().ToListAsync();
+        }
+
         public Task<int> DeleteWorkoutAsync(Workout workout)
         {
             return _database.DeleteAsync(workout);
+        }
+
+        public Task<int> DeleteUserAsync(User user)
+        {
+            return _database.DeleteAsync(user);
+        }
+
+        public Task<int> DeleteWorkoutsByUserIdAsync(int userId)
+        {
+            return _database.Table<Workout>().Where(w => w.UserId == userId).DeleteAsync();
         }
     }
 }

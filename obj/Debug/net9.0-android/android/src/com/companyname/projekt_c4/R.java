@@ -12004,9 +12004,11 @@ public final class R {
     public static final int routesinactive=0x7f080100;
     public static final int runactive=0x7f080101;
     public static final int runinactive=0x7f080102;
-    public static final int test_level_drawable=0x7f080103;
-    public static final int tooltip_frame_dark=0x7f080104;
-    public static final int tooltip_frame_light=0x7f080105;
+    public static final int searchactive=0x7f080103;
+    public static final int searchinactive=0x7f080104;
+    public static final int test_level_drawable=0x7f080105;
+    public static final int tooltip_frame_dark=0x7f080106;
+    public static final int tooltip_frame_light=0x7f080107;
   }
   public static final class id {
     public static final int ALT=0x7f090000;

@@ -51,5 +51,99 @@ namespace Projekt_c4.Services
                 return new List<Workout>(); // Gdy brak neta - oddaj pustą listę zamiast wywalać
             }
         }
+
+        // --- FUNKCJE UŻYTKOWNIKÓW (FIREBASE) ---
+        public async Task<User?> RegisterUserAsync(User user)
+        {
+            try
+            {
+                // Ustawiamy sztywne, losowe, unikalne ID w formie int, aby nie kłóciło się z bazą SQLite na innych urządzeniach
+                if (user.Id == 0)
+                    user.Id = Math.Abs(Guid.NewGuid().GetHashCode());
+
+                await firebaseClient
+                    .Child("Users")
+                    .Child(user.Id.ToString())
+                    .PutAsync(user);
+
+                return user;
+            }
+            catch { return null; }
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            try
+            {
+                var users = await firebaseClient
+                    .Child("Users")
+                    .OnceAsync<User>();
+
+                return users.Select(x => x.Object).FirstOrDefault(u => u.Email == email);
+            }
+            catch { return null; }
+        }
+
+        public async Task<User?> LoginUserAsync(string email, string password)
+        {
+            try
+            {
+                var users = await firebaseClient
+                    .Child("Users")
+                    .OnceAsync<User>();
+
+                return users.Select(x => x.Object).FirstOrDefault(u => u.Email == email && u.PasswordHash == password);
+            }
+            catch { return null; }
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            try
+            {
+                await firebaseClient
+                    .Child("Users")
+                    .Child(user.Id.ToString())
+                    .PutAsync(user);
+            }
+            catch { }
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                var users = await firebaseClient
+                    .Child("Users")
+                    .OnceAsync<User>();
+
+                return users.Select(x => x.Object).ToList();
+            }
+            catch { return new List<User>(); }
+        }
+
+        public async Task DeleteUserAsync(int userId)
+        {
+            try
+            {
+                await firebaseClient
+                    .Child("Users")
+                    .Child(userId.ToString())
+                    .DeleteAsync();
+            }
+            catch { }
+        }
+
+        public async Task DeleteUserWorkoutsAsync(int userId)
+        {
+            try
+            {
+                await firebaseClient
+                    .Child("Workouts")
+                    .Child(userId.ToString())
+                    .DeleteAsync();
+            }
+            catch { }
+        }
     }
 }

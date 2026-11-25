@@ -1,0 +1,3 @@
+/Users/michaltokarz/StudioProjects/Projekt_c43/bin/Release/net9.0-android/publish/com.companyname.projekt_c4-Signed.apk
+/Users/michaltokarz/StudioProjects/Projekt_c43/bin/Release/net9.0-android/publish/com.companyname.projekt_c4.apk
+/Users/michaltokarz/StudioProjects/Projekt_c43/bin/Release/net9.0-android/publish/_Microsoft.Android.Resource.Designer.dll

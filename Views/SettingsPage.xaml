@@ -6,34 +6,39 @@
              BackgroundColor="#16181F">
 
     <Grid RowDefinitions="Auto, *">
-        <!-- GÓRNY PASEK Z PRZYCISKIEM POWROTU -->
-        <Grid Grid.Row="0" Margin="15,40,15,15" ColumnDefinitions="Auto, *">
+        <!-- GÓRNY PASEK Z PRZYCISKIEM POWROTU ORAZ USUŃ KONTO -->
+        <Grid Grid.Row="0" Margin="15,40,15,15" ColumnDefinitions="Auto, *, Auto">
             <Frame Grid.Column="0" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#1A1D24" Padding="0" HasShadow="False" BorderColor="Transparent">
                 <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnBackTapped" />
                 </Frame.GestureRecognizers>
                 <Label Text="←" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontSize="20" FontAttributes="Bold"/>
             </Frame>
-            <Label Grid.Column="1" Text="Ustawienia Konta" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontAttributes="Bold" FontSize="20" Margin="-40,0,0,0" />
+            <Label Grid.Column="1" Text="Ustawienia Konta" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontAttributes="Bold" FontSize="20" Margin="-20,0,0,0" />
+            <Frame Grid.Column="2" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDeleteAccountTapped" />
+                </Frame.GestureRecognizers>
+                <Label Text="🗑️" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18" TextColor="#FF5252" />
+            </Frame>
         </Grid>
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,10,20,40" Spacing="15">
 
-                <Grid HorizontalOptions="Center" Margin="0,0,0,20">
-                    <Grid.GestureRecognizers>
+                <Border StrokeShape="RoundRectangle 50" BackgroundColor="#222731" WidthRequest="100" HeightRequest="100" HorizontalOptions="Center" Margin="0,0,0,20" StrokeThickness="0">
+                    <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnChangeProfilePictureTapped" />
-                    </Grid.GestureRecognizers>
-                    <Frame WidthRequest="100" HeightRequest="100" CornerRadius="50" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent">
-                        <Grid>
-                            <Label x:Name="ProfileEmoji" Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="50"/>
-                            <Image x:Name="ProfileImage" Aspect="AspectFill" IsVisible="False" />
-                        </Grid>
-                    </Frame>
-                    <Frame WidthRequest="100" HeightRequest="100" CornerRadius="50" BackgroundColor="#80000000" Padding="0" HasShadow="False" BorderColor="Transparent" IsVisible="True">
-                        <Label Text="Zmień zdjęcie" TextColor="White" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" />
-                    </Frame>
-                </Grid>
+                    </Border.GestureRecognizers>
+                    <Grid>
+                        <Label x:Name="ProfileEmoji" Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="50"/>
+                        <Image x:Name="ProfileImage" Aspect="AspectFill" IsVisible="False" />
+
+                        <!-- Półprzezroczysty hover tylko gdy jest wybrane zdjęcie! -->
+                        <BoxView x:Name="ProfileDarkOverlay" Color="#80000000" IsVisible="False" />
+                        <Label Text="Zmień" TextColor="White" FontAttributes="Bold" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                    </Grid>
+                </Border>
 
                 <Label Text="Dane osobowe" TextColor="#00E676" FontAttributes="Bold" Margin="0,10,0,0"/>
                 <Border StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="0">
@@ -57,12 +62,59 @@
                 </HorizontalStackLayout>
 
                 <Label Text="Preferencje biegowe" TextColor="#00E676" FontAttributes="Bold" Margin="0,10,0,0"/>
-                <Border StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="0">
-                    <Entry x:Name="StepGoalEntry" Keyboard="Numeric" Placeholder="Dzienny cel kroków" TextColor="White" BackgroundColor="Transparent"/>
+
+                <!-- Pole pokazujące cel, otwiera nakładkę by klawiatura nie zasłaniała -->
+                <Border StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,15" StrokeThickness="0">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnOpenStepGoalOverlayTapped" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" x:Name="StepGoalDisplay" Text="Dzienny cel kroków" TextColor="White" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="✏️" FontSize="14" VerticalOptions="Center"/>
+                    </Grid>
                 </Border>
 
                 <Button Text="ZAPISZ ZMIANY" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" Margin="0,20,0,0" Clicked="OnSaveClicked"/>
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- NAKŁADKA USUWANIA KONTA -->
+        <Grid x:Name="DeleteAccountOverlay" Grid.RowSpan="2" BackgroundColor="#CC000000" IsVisible="False" ZIndex="105">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20" BackgroundColor="#1A1D24" Padding="20" WidthRequest="320">
+                <Label Text="Usuwanie konta" FontSize="20" FontAttributes="Bold" TextColor="#FF5252" HorizontalOptions="Center" />
+                <Label Text="Ta operacja jest nieodwracalna. Stracisz dostęp do historii biegów." TextColor="#888" HorizontalTextAlignment="Center"/>
+
+                <HorizontalStackLayout Spacing="10" Margin="0,10,0,0">
+                    <CheckBox x:Name="ConfirmDeleteCheckbox" Color="#FF5252" />
+                    <Label Text="Rozumiem, że wszystkie moje dane zostaną trwale usunięte." TextColor="White" VerticalOptions="Center" WidthRequest="230" FontSize="12" />
+                </HorizontalStackLayout>
+
+                <Border StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="#FF5252">
+                    <Entry x:Name="DeletePasswordEntry" IsPassword="True" Placeholder="Wpisz hasło aby potwierdzić" TextColor="White" BackgroundColor="Transparent" HorizontalTextAlignment="Center"/>
+                </Border>
+
+                <Button Text="POTWIERDŹ USUNIĘCIE" CornerRadius="20" BackgroundColor="#FF5252" TextColor="White" FontAttributes="Bold" Clicked="OnConfirmDeleteTapped" />
+                <Button Text="ANULUJ" CornerRadius="20" BackgroundColor="Transparent" TextColor="#888" Clicked="OnCancelDeleteTapped" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- NAKŁADKA (OVERLAY) Z WŁAŚCIWYM POLEM WPISYWANIA CELU NA ŚRODKU EKRANU -->
+        <Grid x:Name="StepGoalOverlay" Grid.RowSpan="2" BackgroundColor="#CC000000" IsVisible="False" ZIndex="100">
+            <!-- Tło łapie tapnięcia i zamyka overlay, jeśli nie wpisano pomyślnie na dole -->
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCloseStepGoalOverlayTapped" />
+            </Grid.GestureRecognizers>
+
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+                <Label Text="Nowy cel kroków" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+
+                <Border StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" WidthRequest="250" StrokeThickness="2" Stroke="#00E676">
+                    <Entry x:Name="StepGoalEntry" Keyboard="Numeric" TextColor="White" BackgroundColor="Transparent" HorizontalTextAlignment="Center" FontSize="22" FontAttributes="Bold"/>
+                </Border>
+
+                <Button Text="ZATWIERDŹ" CornerRadius="20" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" WidthRequest="200" Clicked="OnCloseStepGoalOverlayTapped" />
+            </VerticalStackLayout>
+        </Grid>
+
     </Grid>
 </ContentPage>

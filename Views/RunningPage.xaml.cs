@@ -53,7 +53,7 @@ namespace Projekt_c4.Views
             };
 
             timer = Dispatcher.CreateTimer();
-            timer.Interval = TimeSpan.FromSeconds(2);
+            timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
         }
 
@@ -170,18 +170,18 @@ namespace Projekt_c4.Views
         {
             if (isRunning && !isPaused)
             {
-                // Aktualizujemy etykietę czasu tylko gdy trwa bieg (odejmując czas wstrzymania)
+                // Aktualizujemy etykietę czasu natychmiast
                 var duration = DateTime.Now - startTime - totalPausedTime;
                 DurationLabel.Text = duration.ToString(@"mm\:ss");
             }
 
-            // W tle pobieramy lokalizację przez cały czas
-            UpdateLocation();
+            // W tle pobieramy lokalizację puszczając asynchronicznie, by nie tamować odliczania co sekundę!
+            _ = UpdateLocationAsync();
         }
 
         private bool isCheckingLocation = false; // Blokada przed zatykaniem się żądań GPS
 
-        private async void UpdateLocation()
+        private async Task UpdateLocationAsync()
         {
             if (isCheckingLocation || isPaused)
                 return;

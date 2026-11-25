@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Projekt_c4.Views.OtherUserProfilePage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#16181F">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- GÓRNY PASEK Z PRZYCISKIEM POWROTU -->
+        <Grid Grid.Row="0" Margin="15,40,15,15" ColumnDefinitions="Auto, *">
+            <Frame Grid.Column="0" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#1A1D24" Padding="0" HasShadow="False" BorderColor="Transparent">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackTapped" />
+                </Frame.GestureRecognizers>
+                <Label Text="←" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontSize="20" FontAttributes="Bold"/>
+            </Frame>
+            <Label Grid.Column="1" Text="Profil Biegacza" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontAttributes="Bold" FontSize="20" Margin="-40,0,0,0" />
+        </Grid>
+
+        <Grid Grid.Row="1" RowDefinitions="Auto, Auto, *" Padding="20,10,20,20">
+            <!-- NAGŁÓWEK / PROFIL -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *" Margin="0,0,0,30">
+                <Frame Grid.Column="0" WidthRequest="80" HeightRequest="80" CornerRadius="40" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent">
+                    <Grid>
+                        <Label x:Name="ProfileEmoji" Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="40"/>
+                        <Image x:Name="ProfileImage" Aspect="AspectFill" IsVisible="False" />
+                    </Grid>
+                </Frame>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="20,0,0,0">
+                    <Label x:Name="UserNameLabel" FontSize="24" FontAttributes="Bold" TextColor="White"/>
+                    <Label x:Name="UserEmailLabel" FontSize="14" TextColor="#888"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- SUMA KROKÓW -->
+            <Frame Grid.Row="1" BackgroundColor="#1A1D24" CornerRadius="20" Padding="20" BorderColor="Transparent" Margin="0,0,0,15">
+                <Grid ColumnDefinitions="Auto, *">
+                    <Label Grid.Column="0" Text="🏆" FontSize="40" VerticalOptions="Center" Margin="0,0,15,0"/>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                        <Label Text="Dorobek kroków użytkownika:" TextColor="#888" FontSize="12"/>
+                        <Label x:Name="TotalStepsLabel" Text="0" TextColor="#00E676" FontSize="28" FontAttributes="Bold"/>
+                        <Label Text="Prawdziwy weteran tras!" TextColor="White" FontSize="14" FontAttributes="Italic" Margin="0,2,0,0"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <Label Grid.Row="2" Text="Ostatnie Biegi" FontSize="18" FontAttributes="Bold" TextColor="White" Margin="0,10,0,10" VerticalOptions="Start"/>
+
+            <CollectionView Grid.Row="2" x:Name="WorkoutsCollectionView" Margin="0,40,0,0">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10" Margin="0,40,0,0">
+                        <Label Text="💨" FontSize="50" HorizontalOptions="Center" />
+                        <Label Text="Ten użytkownik nie biegał." FontSize="16" TextColor="#888" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,0,0,15" Padding="0" CornerRadius="20" BackgroundColor="#1A1D24" HasShadow="False" BorderColor="Transparent">
+                            <Grid ColumnDefinitions="*, Auto" Padding="20">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" TextColor="#888" Margin="0,5,0,0"/>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+                                    <Label Text="{Binding DistanceKm, StringFormat='{0:F2} km'}" FontSize="18" FontAttributes="Bold" TextColor="#00E676" HorizontalOptions="End"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </Grid>
+</ContentPage>
