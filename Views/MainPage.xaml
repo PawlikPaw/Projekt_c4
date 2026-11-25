@@ -9,76 +9,136 @@
     <Grid>
         <!-- WIDOK LOGOWANIA -->
         <Grid x:Name="LoginView" Padding="20,40,20,20" IsVisible="True" BackgroundColor="#16181F" ZIndex="10">
-            <VerticalStackLayout VerticalOptions="Center" Spacing="20">
-                <Image Source="logo_xd.svg" HeightRequest="120" HorizontalOptions="Center" Margin="0,0,0,10"/>
-                <Label Text="Runnner" FontSize="32" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
-                <Label Text="Zaloguj się, aby śledzić swoje treningi" FontSize="16" TextColor="#888" HorizontalOptions="Center" Margin="0,-10,0,20"/>
+            <ScrollView VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout VerticalOptions="Center" Spacing="20" Padding="0,20">
+                    <Image Source="logo_xd.svg" HeightRequest="120" HorizontalOptions="Center" Margin="0,0,0,10"/>
+                    <Label Text="Runnner" FontSize="32" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="Zaloguj się, aby śledzić swoje treningi" FontSize="16" TextColor="#888" HorizontalOptions="Center" Margin="0,-10,0,20"/>
 
-                <Label x:Name="ErrorLabel" TextColor="Red" IsVisible="False" HorizontalOptions="Center" />
+                    <Label x:Name="ErrorLabel" TextColor="Red" IsVisible="False" HorizontalOptions="Center" />
 
-                <Border x:Name="EmailBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="EmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" Keyboard="Email" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
-                <Border x:Name="PasswordBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="PasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
+                    <Border x:Name="EmailBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="EmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" Keyboard="Email" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
+                    <Border x:Name="PasswordBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="PasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
 
-                <Button Text="ZALOGUJ" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="16" Clicked="OnLoginClicked" Margin="0,10,0,0"/>
+                    <Button Text="ZALOGUJ" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="16" Clicked="OnLoginClicked" Margin="0,10,0,0"/>
 
-                <Button Text="Nie masz konta? Zarejestruj się." TextColor="#00E676" BackgroundColor="Transparent" HorizontalOptions="Center" FontSize="14" Margin="0,10,0,0" Clicked="OnShowRegisterClicked"/>
-            </VerticalStackLayout>
+                    <ImageButton
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        BackgroundColor="#222731"
+                        HorizontalOptions="Center"
+                        Margin="0,10,0,0"
+                        Clicked="OnBiometricLoginClicked"
+                        Padding="16"
+                        Aspect="AspectFit">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="Source" Value="biometricinactive.png" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="Source" Value="biometricactive.png" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                    </ImageButton>
+
+                    <Button Text="Nie masz konta? Zarejestruj się." TextColor="#00E676" BackgroundColor="Transparent" HorizontalOptions="Center" FontSize="14" Margin="0,10,0,0" Clicked="OnShowRegisterClicked"/>
+                </VerticalStackLayout>
+            </ScrollView>
         </Grid>
 
         <!-- WIDOK REJESTRACJI -->
         <Grid x:Name="RegisterView" Padding="20,40,20,20" IsVisible="False" BackgroundColor="#16181F" ZIndex="15">
-            <VerticalStackLayout VerticalOptions="Center" Spacing="15">
-                <Label Text="Nowe Konto" FontSize="32" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" Margin="0,0,0,20"/>
+            <ScrollView VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout VerticalOptions="Center" Spacing="15" Padding="0,20">
+                    <Label Text="Nowe Konto" FontSize="32" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" Margin="0,0,0,20"/>
 
-                <Label x:Name="RegisterErrorLabel" TextColor="Red" IsVisible="False" HorizontalOptions="Center" />
+                    <Label x:Name="RegisterErrorLabel" TextColor="Red" IsVisible="False" HorizontalOptions="Center" />
 
-                <Border x:Name="RegFirstNameBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="RegFirstNameEntry" Placeholder="Imię" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
-                <Border x:Name="RegLastNameBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="RegLastNameEntry" Placeholder="Nazwisko" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
-                <Border x:Name="RegEmailBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="RegEmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" Keyboard="Email" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
-                <Border x:Name="RegPasswordBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="RegPasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
-                <Border x:Name="RegPasswordConfirmBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
-                    <Entry x:Name="RegPasswordConfirmEntry" Placeholder="Powtórz hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
-                </Border>
+                    <Border x:Name="RegFirstNameBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="RegFirstNameEntry" Placeholder="Imię" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
+                    <Border x:Name="RegLastNameBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="RegLastNameEntry" Placeholder="Nazwisko" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
+                    <Border x:Name="RegEmailBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="RegEmailEntry" Placeholder="Adres e-mail" PlaceholderColor="#888" TextColor="White" Keyboard="Email" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
+                    <Border x:Name="RegPasswordBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="RegPasswordEntry" Placeholder="Hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
+                    <Border x:Name="RegPasswordConfirmBorder" StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,0" StrokeThickness="2" Stroke="Transparent">
+                        <Entry x:Name="RegPasswordConfirmEntry" Placeholder="Powtórz hasło" IsPassword="True" PlaceholderColor="#888" TextColor="White" BackgroundColor="Transparent" Focused="OnEntryFocused" Unfocused="OnEntryUnfocused"/>
+                    </Border>
 
-                <Button Text="ZAREJESTRUJ" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="16" Clicked="OnRegisterConfirmClicked" Margin="0,15,0,0"/>
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,10,0,0">
+                        <CheckBox x:Name="UseBiometricsCheckbox" Color="#00E676" />
+                        <Label Text="Połącz konto z odciskiem palca" TextColor="White" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
 
-                <Button Text="Masz już konto? Zaloguj się." TextColor="#00E676" BackgroundColor="Transparent" HorizontalOptions="Center" FontSize="14" Margin="0,10,0,0" Clicked="OnShowLoginClicked"/>
-            </VerticalStackLayout>
+                    <Button Text="ZAREJESTRUJ" CornerRadius="25" HeightRequest="55" BackgroundColor="#00E676" TextColor="Black" FontAttributes="Bold" FontSize="16" Clicked="OnRegisterConfirmClicked" Margin="0,15,0,0"/>
+
+                    <Button Text="Masz już konto? Zaloguj się." TextColor="#00E676" BackgroundColor="Transparent" HorizontalOptions="Center" FontSize="14" Margin="0,10,0,0" Clicked="OnShowLoginClicked"/>
+                </VerticalStackLayout>
+            </ScrollView>
         </Grid>
 
         <!-- GŁÓWNY WIDOK PROFILU (Pokazuje się po zalogowaniu) -->
         <Grid x:Name="ProfileView" RowDefinitions="Auto, *" Padding="20,40,20,20" IsVisible="False" ZIndex="5">
 
             <!-- NAGŁÓWEK / PROFIL UŻYTKOWNIKA -->
-            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Margin="0,0,0,30">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto" Margin="0,0,0,30">
+                <!-- Profil ze zdjęciem -->
                 <Frame Grid.Column="0" WidthRequest="60" HeightRequest="60" CornerRadius="30" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent">
-                    <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="30"/>
+                    <Grid>
+                        <Label Text="👤" IsVisible="{Binding HasNoProfileImage}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="30"/>
+                        <Image Source="{Binding ProfileImagePath}" IsVisible="{Binding HasProfileImage}" Aspect="AspectFill" />
+                    </Grid>
                 </Frame>
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0">
                     <Label Text="{Binding CurrentUserName, StringFormat='Witaj, {0}!'}" FontSize="24" FontAttributes="Bold" TextColor="White"/>
                     <Label Text="Gotowy na bicie rekordów?" FontSize="14" TextColor="#00E676"/>
                 </VerticalStackLayout>
 
-                <Button Grid.Column="2" Text="Wyloguj" TextColor="#FF5252" BackgroundColor="Transparent" FontAttributes="Bold" Clicked="OnLogoutClicked" VerticalOptions="Center"/>
+                <Label Grid.Column="2" Text="⚙️" FontSize="24" VerticalOptions="Center" Margin="0,0,15,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSettingsTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Button Grid.Column="3" Text="Wyloguj" TextColor="#FF5252" BackgroundColor="Transparent" FontAttributes="Bold" Clicked="OnLogoutClicked" VerticalOptions="Center" Padding="0"/>
             </Grid>
 
             <!-- HISTORIA TRENINGÓW -->
-            <VerticalStackLayout Grid.Row="1" Spacing="15">
-                <Label Text="Ostatnie Biegi" FontSize="18" FontAttributes="Bold" TextColor="White" Margin="0,0,0,10"/>
+            <Grid Grid.Row="1" RowDefinitions="Auto, Auto, *">
 
-                <CollectionView ItemsSource="{Binding Workouts}">
+                <!-- SUMA KROKÓW (NOWE) -->
+                <Frame Grid.Row="0" BackgroundColor="#1A1D24" CornerRadius="20" Padding="20" BorderColor="Transparent" Margin="0,0,0,15">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Grid.Column="0" Text="🏆" FontSize="40" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Twój dorobek kroków:" TextColor="#888" FontSize="12"/>
+                            <Label Text="{Binding TotalSteps, StringFormat='{0:N0}'}" TextColor="#00E676" FontSize="28" FontAttributes="Bold"/>
+                            <Label Text="Świetna robota, tak trzymaj!" TextColor="White" FontSize="14" FontAttributes="Italic" Margin="0,2,0,0"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+
+                <Label Grid.Row="1" Text="Ostatnie Biegi" FontSize="18" FontAttributes="Bold" TextColor="White" Margin="0,0,0,10"/>
+
+                <CollectionView Grid.Row="2" ItemsSource="{Binding Workouts}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame Margin="0,0,0,15" Padding="0" CornerRadius="20" BackgroundColor="#1A1D24" HasShadow="False" BorderColor="Transparent">
@@ -96,7 +156,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            </VerticalStackLayout>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>

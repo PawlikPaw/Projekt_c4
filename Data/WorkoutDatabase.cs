@@ -38,12 +38,20 @@ namespace Projekt_c4.Data
 
         public Task<int> SaveUserAsync(User user)
         {
-            return _database.InsertAsync(user);
+            if (user.Id != 0)
+                return _database.UpdateAsync(user);
+            else
+                return _database.InsertAsync(user);
         }
 
         public Task<User> GetUserByEmailAsync(string email)
         {
             return _database.Table<User>().Where(u => u.Email == email).FirstOrDefaultAsync();
+        }
+
+        public Task<User> GetUserByIdAsync(int id)
+        {
+            return _database.Table<User>().Where(u => u.Id == id).FirstOrDefaultAsync();
         }
         public Task<int> DeleteWorkoutAsync(Workout workout)
         {

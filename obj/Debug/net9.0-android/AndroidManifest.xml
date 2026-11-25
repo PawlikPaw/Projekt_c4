@@ -11,6 +11,10 @@
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+  <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
   <application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true" android:name="crc64843dd1bb685f84d5.MainApplication" android:label="Runnner" android:debuggable="true" android:extractNativeLibs="true">
     <!-- TUTAJ MUSISZ WKLEIĆ SWÓJ KLUCZ GOOGLE MAPS API ABY WIDZIEĆ ULICE -->
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAaUOsTLWEoZ0oYF4WP4VOX4ifFZ7RiMm4" />
@@ -33,4 +37,6 @@
     <provider android:name="mono.MonoRuntimeProvider" android:exported="false" android:initOrder="1999999999" android:authorities="com.companyname.projekt_c4.mono.MonoRuntimeProvider.__mono_init__" />
   </application>
   <!-- UPRAWNIENIA DO GPS -->
+  <!-- UPRAWNIENIA DO ODCISKU PALCA (BIOMETRII) -->
+  <!-- UPRAWNIENIA DO ODCZYTU PLIKÓW / GALERII (Dla zdjęć profilowych) -->
 </manifest>

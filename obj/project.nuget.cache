@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ED6VFofigCg=",
+  "dgSpecHash": "uTEoL/uXtQU=",
   "success": true,
   "projectFilePath": "/Users/michaltokarz/StudioProjects/Projekt_c43/Projekt_c4.csproj",
   "expectedPackageFiles": [
@@ -29,6 +29,7 @@
     "/Users/michaltokarz/.nuget/packages/microsoft.maui.resizetizer/9.0.0/microsoft.maui.resizetizer.9.0.0.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/microsoft.net.illink.tasks/9.0.22/microsoft.net.illink.tasks.9.0.22.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",
+    "/Users/michaltokarz/.nuget/packages/plugin.fingerprint/3.0.0-beta.1/plugin.fingerprint.3.0.0-beta.1.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/sourcegear.sqlite3/3.53.3/sourcegear.sqlite3.3.53.3.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/sqlite-net-pcl/1.11.285/sqlite-net-pcl.1.11.285.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/sqlitepclraw.core/3.0.3/sqlitepclraw.core.3.0.3.nupkg.sha512",
@@ -36,6 +37,7 @@
     "/Users/michaltokarz/.nuget/packages/sqlitepclraw.provider.sqlite3/3.0.3/sqlitepclraw.provider.sqlite3.3.0.3.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/system.io.pipelines/10.0.14/system.io.pipelines.10.0.14.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/system.reactive/6.0.0/system.reactive.6.0.0.nupkg.sha512",
+    "/Users/michaltokarz/.nuget/packages/system.runtime.interopservices.nfloat.internal/6.0.1/system.runtime.interopservices.nfloat.internal.6.0.1.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/system.text.encodings.web/10.0.14/system.text.encodings.web.10.0.14.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/system.text.json/10.0.14/system.text.json.10.0.14.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.android.glide/4.16.0.6/xamarin.android.glide.4.16.0.6.nupkg.sha512",
@@ -51,6 +53,7 @@
     "/Users/michaltokarz/.nuget/packages/xamarin.androidx.appcompat.appcompatresources/1.7.0.3/xamarin.androidx.appcompat.appcompatresources.1.7.0.3.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.androidx.arch.core.common/2.2.0.13/xamarin.androidx.arch.core.common.2.2.0.13.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.androidx.arch.core.runtime/2.2.0.13/xamarin.androidx.arch.core.runtime.2.2.0.13.nupkg.sha512",
+    "/Users/michaltokarz/.nuget/packages/xamarin.androidx.biometric/1.1.0.9/xamarin.androidx.biometric.1.1.0.9.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.androidx.browser/1.8.0.6/xamarin.androidx.browser.1.8.0.6.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.androidx.cardview/1.0.0.31/xamarin.androidx.cardview.1.0.0.31.nupkg.sha512",
     "/Users/michaltokarz/.nuget/packages/xamarin.androidx.collection/1.4.3.1/xamarin.androidx.collection.1.4.3.1.nupkg.sha512",

@@ -231,25 +231,6 @@ namespace Projekt_c4.Views
             }
         }
 
-        private async void OnEditStepGoalTapped(object sender, EventArgs e)
-        {
-            string newGoalStr = await DisplayPromptAsync("Cel Kroków", "Wpisz nowy dzienny cel kroków:", "Zapisz", "Anuluj", null, -1, Keyboard.Numeric, stepGoal.ToString());
-
-            if (!string.IsNullOrWhiteSpace(newGoalStr) && int.TryParse(newGoalStr, out int newGoal))
-            {
-                if (newGoal > 0)
-                {
-                    stepGoal = newGoal;
-                    StepGoalLabel.Text = stepGoal.ToString("N0");
-                    Microsoft.Maui.Storage.Preferences.Default.Set("DailyStepGoal", stepGoal);
-                }
-                else
-                {
-                    await DisplayAlert("Błąd", "Cel kroków musi być większy niż zero.", "OK");
-                }
-            }
-        }
-
         private bool isPanelExpanded = true;
 
         // --- ZWIJANIE I ROZWIJANIE PANELU STATYSTYK (PAN/PRZESUWANIE) ---

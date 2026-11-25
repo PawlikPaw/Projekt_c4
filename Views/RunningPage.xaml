@@ -110,14 +110,7 @@
 
                                 <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
                                     <Label Text="Cel:" FontSize="12" TextColor="#555" HorizontalOptions="End"/>
-                                    <HorizontalStackLayout HorizontalOptions="End">
-                                        <Label x:Name="StepGoalLabel" Text="10 000" FontSize="14" FontAttributes="Bold" TextColor="#00E676" VerticalOptions="Center"/>
-                                        <Label Text=" ✏️" FontSize="12" TextColor="#FFB300" VerticalOptions="Center">
-                                            <Label.GestureRecognizers>
-                                                <TapGestureRecognizer Tapped="OnEditStepGoalTapped" />
-                                            </Label.GestureRecognizers>
-                                        </Label>
-                                    </HorizontalStackLayout>
+                                    <Label x:Name="StepGoalLabel" Text="10 000" FontSize="14" FontAttributes="Bold" TextColor="#00E676" HorizontalOptions="End"/>
                                 </VerticalStackLayout>
                             </Grid>
                         </Frame>

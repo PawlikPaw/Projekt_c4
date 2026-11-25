@@ -2,6 +2,8 @@ using System;
 using System.Text.RegularExpressions;
 using Microsoft.Maui.Controls;
 using Projekt_c4.Models;
+using Plugin.Fingerprint;
+using Plugin.Fingerprint.Abstractions;
 
 namespace Projekt_c4.Views
 {
@@ -87,6 +89,11 @@ namespace Projekt_c4.Views
             RegisterView.IsVisible = true;
         }
 
+        private async void OnSettingsTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new SettingsPage());
+        }
+
         private void OnShowLoginClicked(object sender, EventArgs e)
         {
             RegisterView.IsVisible = false;
@@ -110,6 +117,43 @@ namespace Projekt_c4.Views
                 ViewModels.MainViewModel.Instance.CurrentUserName = "Biegaczu";
                 ViewModels.MainViewModel.Instance.CurrentUserId = 0;
                 ViewModels.MainViewModel.Instance.Workouts.Clear();
+            }
+        }
+
+        private async void OnBiometricLoginClicked(object sender, EventArgs e)
+        {
+            var isAvailable = await CrossFingerprint.Current.IsAvailableAsync(false);
+            if (!isAvailable)
+            {
+                ErrorLabel.Text = "Logowanie biometryczne nie jest dostępne na tym urządzeniu.";
+                ErrorLabel.IsVisible = true;
+                return;
+            }
+
+            var savedEmail = Microsoft.Maui.Storage.Preferences.Default.Get("BiometricUserEmail", "");
+            var savedPassword = Microsoft.Maui.Storage.Preferences.Default.Get("BiometricUserPassword", "");
+
+            if (string.IsNullOrEmpty(savedEmail) || string.IsNullOrEmpty(savedPassword))
+            {
+                ErrorLabel.Text = "Brak przypisanego odcisku. Zaloguj się tradycyjnie lub włącz opcję przy rejestracji.";
+                ErrorLabel.IsVisible = true;
+                return;
+            }
+
+            var request = new AuthenticationRequestConfiguration("Logowanie", "Przyłóż palec, aby się zalogować.");
+            var result = await CrossFingerprint.Current.AuthenticateAsync(request);
+
+            if (result.Authenticated)
+            {
+                // Przepisanie z pamięci i ciche wywołanie normalnego kodu sprawdzającego logowanie
+                EmailEntry.Text = savedEmail;
+                PasswordEntry.Text = savedPassword;
+                OnLoginClicked(this, EventArgs.Empty);
+            }
+            else
+            {
+                ErrorLabel.Text = "Nie rozpoznano odcisku palca.";
+                ErrorLabel.IsVisible = true;
             }
         }
 
@@ -153,13 +197,37 @@ namespace Projekt_c4.Views
             }
             else
             {
-                await App.Database.SaveUserAsync(new User
+                var newUser = new User
                 {
                     FirstName = firstName,
                     LastName = lastName,
                     Email = email,
-                    PasswordHash = password
-                });
+                    PasswordHash = password,
+                    UseBiometrics = UseBiometricsCheckbox.IsChecked
+                };
+
+                await App.Database.SaveUserAsync(newUser);
+
+                // Jeżeli użytkownik zaznaczył chęć logowania palcem
+                if (newUser.UseBiometrics)
+                {
+                    // Weryfikacja biometryczna podczas samej rejestracji!
+                    var request = new AuthenticationRequestConfiguration("Rejestracja", "Przyłóż palec, aby powiązać odcisk z nowym kontem.");
+                    var result = await CrossFingerprint.Current.AuthenticateAsync(request);
+
+                    if (result.Authenticated)
+                    {
+                        Microsoft.Maui.Storage.Preferences.Default.Set("BiometricUserEmail", email);
+                        Microsoft.Maui.Storage.Preferences.Default.Set("BiometricUserPassword", password);
+                    }
+                    else
+                    {
+                        // Jeśli odrzucono lub się nie udało, wracamy do checkboxa na False (odłączono)
+                        newUser.UseBiometrics = false;
+                        await App.Database.SaveUserAsync(newUser);
+                        await DisplayAlert("Uwaga", "Nie udało się przypisać odcisku palca. Konto założono klasycznie.", "OK");
+                    }
+                }
 
                 RegisterView.IsVisible = false;
                 LoginView.IsVisible = true;

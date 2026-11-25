@@ -20,11 +20,11 @@ public final class R {
 		public static final int nav_default_pop_exit_anim = 0x7f020025;
 	}
 	public static final class integer {
-		public static final int config_navAnimTime = 0x7f090005;
+		public static final int config_navAnimTime = 0x7f0a0005;
 	}
 	public static final class string {
-		public static final int dest_title = 0x7f0f0041;
-		public static final int nav_app_bar_navigate_up_description = 0x7f0f00b2;
-		public static final int nav_app_bar_open_drawer_description = 0x7f0f00b3;
+		public static final int dest_title = 0x7f100043;
+		public static final int nav_app_bar_navigate_up_description = 0x7f1000be;
+		public static final int nav_app_bar_open_drawer_description = 0x7f1000bf;
 	}
 }

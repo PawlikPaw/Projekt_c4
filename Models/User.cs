@@ -14,5 +14,9 @@ namespace Projekt_c4.Models
         public string Email { get; set; } = string.Empty;
 
         public string PasswordHash { get; set; } = string.Empty;
+
+        public bool UseBiometrics { get; set; } = false;
+
+        public string ProfileImagePath { get; set; } = string.Empty;
     }
 }

@@ -34,6 +34,22 @@ namespace Projekt_c4.ViewModels
             }
         }
 
+        private string _profileImagePath = string.Empty;
+        public string ProfileImagePath
+        {
+            get => _profileImagePath;
+            set
+            {
+                _profileImagePath = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasProfileImage));
+                OnPropertyChanged(nameof(HasNoProfileImage));
+            }
+        }
+
+        public bool HasProfileImage => !string.IsNullOrEmpty(ProfileImagePath);
+        public bool HasNoProfileImage => string.IsNullOrEmpty(ProfileImagePath);
+
         private int _currentUserId;
         public int CurrentUserId
         {
@@ -59,6 +75,17 @@ namespace Projekt_c4.ViewModels
 
         public bool IsNotLoggedIn => !IsLoggedIn;
 
+        private int _totalSteps;
+        public int TotalSteps
+        {
+            get => _totalSteps;
+            set
+            {
+                _totalSteps = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainViewModel()
         {
             Workouts = new ObservableCollection<Workout>();
@@ -82,6 +109,12 @@ namespace Projekt_c4.ViewModels
                 return;
             }
 
+            var user = await App.Database.GetUserByIdAsync(CurrentUserId);
+            if (user != null)
+            {
+                ProfileImagePath = user.ProfileImagePath;
+            }
+
             // --- 1. Zaciągnij lokalnie offline (SQLite) ---
             var dbWorkouts = await App.Database.GetWorkoutsAsync(CurrentUserId);
 
@@ -101,10 +134,13 @@ namespace Projekt_c4.ViewModels
 
             // Odśwież i wyświetl wszystko!
             Workouts.Clear();
+            int stepsSum = 0;
             foreach (var workout in dbWorkouts.OrderByDescending(w => w.Date))
             {
                 Workouts.Add(workout);
+                stepsSum += (int)(workout.DistanceKm * 1300);
             }
+            TotalSteps = stepsSum;
         }
 
         public async Task DeleteWorkoutAsync(Workout workout)

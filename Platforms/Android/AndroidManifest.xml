@@ -11,4 +11,12 @@
     <!-- UPRAWNIENIA DO GPS -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- UPRAWNIENIA DO ODCISKU PALCA (BIOMETRII) -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- UPRAWNIENIA DO ODCZYTU PLIKÓW / GALERII (Dla zdjęć profilowych) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 </manifest>

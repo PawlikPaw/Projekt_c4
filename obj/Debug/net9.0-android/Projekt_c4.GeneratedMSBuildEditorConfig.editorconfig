@@ -69,6 +69,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.SavedRout
 build_metadata.AdditionalFiles.TargetPath = Views/SavedRoutesPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Views/SavedRoutesPage.xaml
 
+[/Users/michaltokarz/StudioProjects/Projekt_c43/Views/SettingsPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.SettingsPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views/SettingsPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views/SettingsPage.xaml
+
 [/Users/michaltokarz/StudioProjects/Projekt_c43/Views/WorkoutDetailsPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = Projekt_c4.Views.WorkoutDetailsPage.xaml
