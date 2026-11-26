@@ -36,12 +36,20 @@ namespace Projekt_c4.Data
             return _database.Table<User>().Where(u => u.Email == email && u.PasswordHash == password).FirstOrDefaultAsync();
         }
 
-        public Task<int> SaveUserAsync(User user)
+        public async Task<int> SaveUserAsync(User user)
         {
-            if (user.Id != 0)
-                return _database.UpdateAsync(user);
+            if (user.Id == 0)
+            {
+                return await _database.InsertAsync(user);
+            }
             else
-                return _database.InsertAsync(user);
+            {
+                var existingUser = await _database.Table<User>().Where(u => u.Id == user.Id).FirstOrDefaultAsync();
+                if (existingUser != null)
+                    return await _database.UpdateAsync(user);
+                else
+                    return await _database.InsertAsync(user);
+            }
         }
 
         public Task<User> GetUserByEmailAsync(string email)

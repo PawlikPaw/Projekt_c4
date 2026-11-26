@@ -57,10 +57,6 @@ namespace Projekt_c4.Services
         {
             try
             {
-                // Ustawiamy sztywne, losowe, unikalne ID w formie int, aby nie kłóciło się z bazą SQLite na innych urządzeniach
-                if (user.Id == 0)
-                    user.Id = Math.Abs(Guid.NewGuid().GetHashCode());
-
                 await firebaseClient
                     .Child("Users")
                     .Child(user.Id.ToString())

@@ -4,7 +4,7 @@ namespace Projekt_c4.Models
 {
     public class User
     {
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey]
         public int Id { get; set; }
 
         public string FirstName { get; set; } = string.Empty;

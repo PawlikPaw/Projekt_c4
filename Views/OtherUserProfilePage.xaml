@@ -39,7 +39,7 @@
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                         <Label Text="Dorobek kroków użytkownika:" TextColor="#888" FontSize="12"/>
                         <Label x:Name="TotalStepsLabel" Text="0" TextColor="#00E676" FontSize="28" FontAttributes="Bold"/>
-                        <Label Text="Prawdziwy weteran tras!" TextColor="White" FontSize="14" FontAttributes="Italic" Margin="0,2,0,0"/>
+                        <Label x:Name="MotivationalLabel" Text="Rozpocznij swoją pierwszą trasę!" TextColor="White" FontSize="14" FontAttributes="Italic" Margin="0,2,0,0"/>
                     </VerticalStackLayout>
                 </Grid>
             </Frame>

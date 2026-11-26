@@ -83,6 +83,19 @@ namespace Projekt_c4.ViewModels
             {
                 _totalSteps = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(MotivationalMessage));
+            }
+        }
+
+        public string MotivationalMessage
+        {
+            get
+            {
+                if (TotalSteps == 0) return "Rozpocznij swoją pierwszą trasę!";
+                if (TotalSteps < 10000) return "Świetny start! Oby tak dalej.";
+                if (TotalSteps < 50000) return "Dobra robota! Idziesz jak burza.";
+                if (TotalSteps < 100000) return "Prawdziwy weteran tras!";
+                return "Niesamowite! Jesteś maszyną do biegania!";
             }
         }
 
@@ -130,6 +143,21 @@ namespace Projekt_c4.ViewModels
                     await App.Database.SaveWorkoutAsync(cloudWorkout);
                     dbWorkouts.Add(cloudWorkout);
                 }
+            }
+
+            // Wypchnij do chmury (Firebase) te treningi, które są u nas lokalnie, a których chmura jeszcze nie zna
+            foreach (var localWorkout in dbWorkouts)
+            {
+                if (!cloudWorkouts.Any(w => w.Date.ToString() == localWorkout.Date.ToString() && w.DistanceKm == localWorkout.DistanceKm))
+                {
+                    _ = App.FirebaseCloud.PushWorkoutAsync(localWorkout);
+                }
+            }
+
+            // Jeśli konto istnieje, a jakimś cudem nie ma go na Firebase, naprawiamy to na żywo
+            if (user != null)
+            {
+                _ = App.FirebaseCloud.UpdateUserAsync(user);
             }
 
             // Odśwież i wyświetl wszystko!

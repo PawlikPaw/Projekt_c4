@@ -14,13 +14,8 @@
                 </Frame.GestureRecognizers>
                 <Label Text="←" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontSize="20" FontAttributes="Bold"/>
             </Frame>
-            <Label Grid.Column="1" Text="Ustawienia Konta" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontAttributes="Bold" FontSize="20" Margin="-20,0,0,0" />
-            <Frame Grid.Column="2" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#222731" Padding="0" HasShadow="False" BorderColor="Transparent">
-                <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnDeleteAccountTapped" />
-                </Frame.GestureRecognizers>
-                <Label Text="🗑️" HorizontalOptions="Center" VerticalOptions="Center" FontSize="18" TextColor="#FF5252" />
-            </Frame>
+            <Label Grid.Column="1" Text="Ustawienia" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontAttributes="Bold" FontSize="20" Margin="0,0,0,0" />
+            <Button Grid.Column="2" Text="Usuń konto" TextColor="#FF5252" BackgroundColor="Transparent" BorderColor="#FF5252" BorderWidth="1" CornerRadius="15" HeightRequest="35" Padding="15,0" VerticalOptions="Center" FontAttributes="Bold" Clicked="OnDeleteAccountTapped" />
         </Grid>
 
         <ScrollView Grid.Row="1">
@@ -61,7 +56,7 @@
                     <Label Text="Użyj odcisku palca do logowania" TextColor="White" VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <Label Text="Preferencje biegowe" TextColor="#00E676" FontAttributes="Bold" Margin="0,10,0,0"/>
+                <Label Text="Cel kroków" TextColor="#00E676" FontAttributes="Bold" Margin="0,10,0,0"/>
 
                 <!-- Pole pokazujące cel, otwiera nakładkę by klawiatura nie zasłaniała -->
                 <Border StrokeShape="RoundRectangle 15" BackgroundColor="#222731" Padding="15,15" StrokeThickness="0">

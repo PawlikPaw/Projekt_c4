@@ -114,6 +114,7 @@ namespace Projekt_c4.Views
             else
             {
                 ErrorLabel.Text = "Nieprawidłowy email lub hasło.";
+                ErrorLabel.TextColor = Colors.Red;
                 ErrorLabel.IsVisible = true;
             }
         }
@@ -157,38 +158,49 @@ namespace Projekt_c4.Views
 
         private async void OnBiometricLoginClicked(object sender, EventArgs e)
         {
-            var isAvailable = await CrossFingerprint.Current.IsAvailableAsync(false);
-            if (!isAvailable)
+            // Optyczna zmiana na zielony kolor (odpowiednik pseudo-pressed)
+            BiometricIcon.Source = "biometricactive.png";
+
+            try
             {
-                ErrorLabel.Text = "Logowanie biometryczne nie jest dostępne na tym urządzeniu.";
-                ErrorLabel.IsVisible = true;
-                return;
+                var isAvailable = await CrossFingerprint.Current.IsAvailableAsync(false);
+                if (!isAvailable)
+                {
+                    ErrorLabel.Text = "Logowanie biometryczne nie jest dostępne na tym urządzeniu.";
+                    ErrorLabel.IsVisible = true;
+                    return;
+                }
+
+                var savedEmail = Microsoft.Maui.Storage.Preferences.Default.Get("BiometricUserEmail", "");
+                var savedPassword = Microsoft.Maui.Storage.Preferences.Default.Get("BiometricUserPassword", "");
+
+                if (string.IsNullOrEmpty(savedEmail) || string.IsNullOrEmpty(savedPassword))
+                {
+                    ErrorLabel.Text = "Brak przypisanego odcisku. Zaloguj się tradycyjnie lub włącz opcję przy rejestracji.";
+                    ErrorLabel.IsVisible = true;
+                    return;
+                }
+
+                var request = new AuthenticationRequestConfiguration("Logowanie", "Przyłóż palec, aby się zalogować.");
+                var result = await CrossFingerprint.Current.AuthenticateAsync(request);
+
+                if (result.Authenticated)
+                {
+                    // Przepisanie z pamięci i ciche wywołanie normalnego kodu sprawdzającego logowanie
+                    EmailEntry.Text = savedEmail;
+                    PasswordEntry.Text = savedPassword;
+                    OnLoginClicked(this, EventArgs.Empty);
+                }
+                else
+                {
+                    ErrorLabel.Text = "Nie rozpoznano odcisku palca.";
+                    ErrorLabel.IsVisible = true;
+                }
             }
-
-            var savedEmail = Microsoft.Maui.Storage.Preferences.Default.Get("BiometricUserEmail", "");
-            var savedPassword = Microsoft.Maui.Storage.Preferences.Default.Get("BiometricUserPassword", "");
-
-            if (string.IsNullOrEmpty(savedEmail) || string.IsNullOrEmpty(savedPassword))
+            finally
             {
-                ErrorLabel.Text = "Brak przypisanego odcisku. Zaloguj się tradycyjnie lub włącz opcję przy rejestracji.";
-                ErrorLabel.IsVisible = true;
-                return;
-            }
-
-            var request = new AuthenticationRequestConfiguration("Logowanie", "Przyłóż palec, aby się zalogować.");
-            var result = await CrossFingerprint.Current.AuthenticateAsync(request);
-
-            if (result.Authenticated)
-            {
-                // Przepisanie z pamięci i ciche wywołanie normalnego kodu sprawdzającego logowanie
-                EmailEntry.Text = savedEmail;
-                PasswordEntry.Text = savedPassword;
-                OnLoginClicked(this, EventArgs.Empty);
-            }
-            else
-            {
-                ErrorLabel.Text = "Nie rozpoznano odcisku palca.";
-                ErrorLabel.IsVisible = true;
+                // Powrót do szarego koloru po wciśnięciu
+                BiometricIcon.Source = "biometricinactive.png";
             }
         }
 
@@ -235,6 +247,7 @@ namespace Projekt_c4.Views
             {
                 var newUser = new User
                 {
+                    Id = Math.Abs(Guid.NewGuid().GetHashCode()), // Ręcznie generujemy globalne ID dla spójności
                     FirstName = firstName,
                     LastName = lastName,
                     Email = email,
@@ -242,18 +255,9 @@ namespace Projekt_c4.Views
                     UseBiometrics = UseBiometricsCheckbox.IsChecked
                 };
 
-                // Najpierw rejestracja w chmurze
-                var registeredCloudUser = await App.FirebaseCloud.RegisterUserAsync(newUser);
-                if (registeredCloudUser != null)
-                {
-                    // Sukces z chmurą, nadpisujemy model nowym ID z chmury i zapisujemy lokalnie
-                    await App.Database.SaveUserAsync(registeredCloudUser);
-                }
-                else
-                {
-                    // Brak internetu, standardowo w SQLite (będzie miało lokalne ID)
-                    await App.Database.SaveUserAsync(newUser);
-                }
+                // Zapisujemy od razu w obu miejscach używając tego samego globalnego ID
+                await App.Database.SaveUserAsync(newUser);
+                _ = App.FirebaseCloud.RegisterUserAsync(newUser);
 
                 // Jeżeli użytkownik zaznaczył chęć logowania palcem
                 if (newUser.UseBiometrics)
@@ -282,7 +286,15 @@ namespace Projekt_c4.Views
                 ErrorLabel.Text = "Zarejestrowano pomyślnie! Zaloguj się.";
                 ErrorLabel.IsVisible = true;
 
-                // Automatyczne wypełnienie maila dla wygody
+                // Resetowanie pól po udanej rejestracji, by nie zostawały tam dane
+                RegFirstNameEntry.Text = string.Empty;
+                RegLastNameEntry.Text = string.Empty;
+                RegEmailEntry.Text = string.Empty;
+                RegPasswordEntry.Text = string.Empty;
+                RegPasswordConfirmEntry.Text = string.Empty;
+                UseBiometricsCheckbox.IsChecked = false;
+
+                // Automatyczne wypełnienie maila w zakładce logowania dla wygody
                 EmailEntry.Text = email;
             }
         }
